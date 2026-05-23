@@ -35,6 +35,39 @@ readonly class TenantReliabilityProfile
         return number_format($this->score, 0);
     }
 
+    public function portalScoreIsEstablished(): bool
+    {
+        return $this->trackedPeriods > 0;
+    }
+
+    public function portalScoreDisplay(): string
+    {
+        return $this->portalScoreIsEstablished() ? $this->scoreFormatted() : 'New';
+    }
+
+    public function portalScoreSubtitle(): string
+    {
+        return $this->portalScoreIsEstablished() ? 'out of 100' : 'Not started yet';
+    }
+
+    public function portalScoreAriaLabel(): string
+    {
+        if (! $this->portalScoreIsEstablished()) {
+            return 'Tenant score not started yet. Your first scored payment begins your score out of 100.';
+        }
+
+        return 'Tenant score '.$this->scoreFormatted().' out of 100';
+    }
+
+    public function portalScoreProgressPercent(): int
+    {
+        if (! $this->portalScoreIsEstablished()) {
+            return 0;
+        }
+
+        return min(100, max(0, (int) round($this->score)));
+    }
+
     public function consistencyFormatted(): string
     {
         return number_format($this->consistencyRate, 0);
@@ -233,6 +266,10 @@ readonly class TenantReliabilityProfile
 
     public function portalProgressionCurrentLine(): string
     {
+        if ($this->trackedPeriods === 0) {
+            return 'Your score hasn\'t started yet';
+        }
+
         return 'You\'re at the '.$this->scoreTier()->scaleLabel().' stage';
     }
 

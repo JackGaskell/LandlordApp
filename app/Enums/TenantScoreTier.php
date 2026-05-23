@@ -38,6 +38,23 @@ enum TenantScoreTier: string
         };
     }
 
+    public function maxScore(): int
+    {
+        return match ($this) {
+            self::NeedsAttention => 39,
+            self::Improving => 59,
+            self::Reliable => 74,
+            self::Trusted => 89,
+            self::Excellent => 100,
+        };
+    }
+
+    /** Display range for the tenant portal journey stepper, e.g. "40–59". */
+    public function scoreRangeLabel(): string
+    {
+        return $this->minScore().'–'.$this->maxScore();
+    }
+
     public function next(): ?self
     {
         return match ($this) {

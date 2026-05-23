@@ -13,9 +13,10 @@
 @endphp
 
 <section
+    {{ $attributes->merge(['class' => 'flex h-full flex-col rounded-2xl bg-white/[0.03] p-5 sm:p-6']) }}
     x-data="{ showUpload: @js($showUploadOnLoad) }"
     @class([
-        'flex h-full flex-col rounded-2xl bg-white/[0.03] p-5 sm:p-6',
+        'ring-1 ring-white/[0.06]' => ! ($hasPayment && $upcoming->isOverdue) && ! $status->portalIsPaid(),
         'ring-1 ring-amber-500/20' => $hasPayment && $upcoming->isOverdue,
         'ring-1 ring-emerald-500/15' => $status->portalIsPaid(),
     ])

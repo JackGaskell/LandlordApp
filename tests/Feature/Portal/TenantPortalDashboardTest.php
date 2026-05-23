@@ -33,14 +33,39 @@ class TenantPortalDashboardTest extends TestCase
             ->assertOk()
             ->assertSee('Maintain and grow your')
             ->assertSee('tenant score')
-            ->assertSee('You\'re at the')
+            ->assertSee('New')
+            ->assertSee('Not started yet')
+            ->assertSee('Your score hasn\'t started yet')
             ->assertSee('Starting')
+            ->assertSee('0–39')
+            ->assertSee('40–59')
             ->assertSee('Excellent')
+            ->assertSee('Pay on time to begin')
             ->assertSee('Next payment')
             ->assertSee('Streak')
             ->assertSee('Consistency')
             ->assertSee('History')
             ->assertSee('I\'ve paid — share proof');
+    }
+
+    public function test_dashboard_shows_numeric_score_after_first_scored_payment(): void
+    {
+        $tenant = Tenant::factory()->create([
+            'password' => Hash::make('password'),
+            'portal_enabled_at' => now(),
+        ]);
+
+        PaymentHistory::factory()->paid()->for($tenant)->create([
+            'due_date' => now()->subMonth(),
+            'paid_at' => now()->subMonth()->addDay(),
+        ]);
+
+        $this->actingAs($tenant, 'tenant')
+            ->get(route('portal.dashboard'))
+            ->assertOk()
+            ->assertSee('out of 100')
+            ->assertSee('You\'re at the')
+            ->assertDontSee('Not started yet');
     }
 
     public function test_portal_snapshot_reflects_overdue_collection_state(): void

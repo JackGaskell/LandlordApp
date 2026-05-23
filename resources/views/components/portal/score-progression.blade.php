@@ -1,15 +1,16 @@
 @props(['profile'])
 
 @php
-    $tier = $profile->scoreTier();
+    $scoreEstablished = $profile->portalScoreIsEstablished();
+    $tier = $scoreEstablished ? $profile->scoreTier() : null;
     $stages = \App\Enums\TenantScoreTier::ordered();
-    $currentIndex = array_search($tier, $stages, true);
-    $trackFill = count($stages) > 1
+    $currentIndex = $tier !== null ? array_search($tier, $stages, true) : false;
+    $trackFill = $scoreEstablished && count($stages) > 1 && $currentIndex !== false
         ? min(100, max(0, ($currentIndex / (count($stages) - 1)) * 100))
         : 0;
 @endphp
 
-<div class="rounded-xl bg-white/[0.04] p-4 ring-1 ring-white/[0.06] sm:p-5">
+<div class="min-w-0 sm:pt-2">
     <div class="space-y-1">
         <p class="text-sm font-semibold text-white">
             {{ $profile->portalProgressionCurrentLine() }}
@@ -30,9 +31,9 @@
         <ol class="relative flex justify-between gap-1">
             @foreach ($stages as $index => $stage)
                 @php
-                    $isCurrent = $stage === $tier;
-                    $isComplete = $index < $currentIndex;
-                    $isFuture = $index > $currentIndex;
+                    $isCurrent = $scoreEstablished && $stage === $tier;
+                    $isComplete = $scoreEstablished && $currentIndex !== false && $index < $currentIndex;
+                    $isFuture = ! $isCurrent && ! $isComplete;
                 @endphp
                 <li class="flex min-w-0 flex-1 flex-col items-center">
                     <span
@@ -60,6 +61,11 @@
                         'text-slate-400' => $isComplete,
                         'text-slate-600' => $isFuture,
                     ])>{{ $stage->scaleLabel() }}</span>
+                    <span @class([
+                        'mt-0.5 text-center text-[9px] tabular-nums leading-tight',
+                        'text-slate-500' => $isCurrent || $isComplete,
+                        'text-slate-700' => $isFuture,
+                    ])>{{ $stage->scoreRangeLabel() }}</span>
                 </li>
             @endforeach
         </ol>
