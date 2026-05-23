@@ -1,17 +1,26 @@
-<x-tenant-portal-layout
-    :title="'Hi, '.$tenant->firstName()"
-    description="Stay on top of rent and watch your score grow."
->
-    <div class="mx-auto max-w-2xl space-y-8">
-        <x-portal.score-experience :profile="$snapshot->reliability" />
+<x-tenant-portal-layout :title="'Hi, '.$tenant->firstName()">
+    <div class="mx-auto max-w-5xl space-y-4 lg:space-y-5">
+        <p class="text-xs font-medium tracking-wide text-slate-500">
+            Maintain and grow your <span class="text-gradient font-semibold">tenant score</span>
+        </p>
 
-        <x-portal.payment-action-card
-            :upcoming="$snapshot->upcomingRent"
-            :status="$snapshot->paymentStatus"
-            :payment-id="$snapshot->collection->paymentId"
-            :payment="$snapshot->currentPayment"
-            :pay-online-coming-soon="$snapshot->payOnlineComingSoon"
-        />
+        <div class="grid gap-4 lg:grid-cols-5 lg:gap-5">
+            <div class="lg:col-span-3">
+                <x-portal.score-experience :profile="$snapshot->reliability" />
+            </div>
+
+            <div class="lg:col-span-2">
+                <x-portal.payment-action-card
+                    :upcoming="$snapshot->upcomingRent"
+                    :status="$snapshot->paymentStatus"
+                    :payment-id="$snapshot->collection->paymentId"
+                    :payment="$snapshot->currentPayment"
+                    :pay-online-coming-soon="$snapshot->payOnlineComingSoon"
+                />
+            </div>
+        </div>
+
+        <x-portal.score-stats-strip :profile="$snapshot->reliability" />
 
         <x-portal.payment-history :items="$snapshot->paymentHistory" />
     </div>

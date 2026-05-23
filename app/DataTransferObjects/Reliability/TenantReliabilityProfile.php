@@ -199,11 +199,55 @@ readonly class TenantReliabilityProfile
         return 'Your next on-time payment starts a fresh streak — one month at a time.';
     }
 
+    public function portalProgressHint(): ?string
+    {
+        if ($this->trackedPeriods === 0) {
+            return 'First payment starts your score';
+        }
+
+        $next = $this->portalNextTier();
+
+        if ($next === null) {
+            return 'Top tier';
+        }
+
+        $points = $this->portalPointsToNextTier();
+
+        return $points > 0
+            ? "{$points} pts to {$next->label()}"
+            : "Almost {$next->label()}";
+    }
+
+    public function portalCompactMessage(): string
+    {
+        if ($this->trackedPeriods === 0) {
+            return 'Your first on-time payment begins your record.';
+        }
+
+        if ($this->currentStreak >= 3) {
+            return 'Strong streak — keep paying on time.';
+        }
+
+        return $this->scoreTier()->portalEncouragement();
+    }
+
     public function portalHasPositiveRecentOutcome(): bool
     {
         $latest = $this->timeline->first();
 
         return $latest !== null && $latest->outcome === PaymentOutcome::OnTime;
+    }
+
+    /**
+     * @return list<array{label: string, value: string}>
+     */
+    public function portalCompactStats(): array
+    {
+        return [
+            ['label' => 'Streak', 'value' => $this->currentStreak > 0 ? $this->currentStreak.' mo' : '—'],
+            ['label' => 'Consistency', 'value' => $this->consistencyFormatted().'%'],
+            ['label' => 'On time', 'value' => (string) $this->totalOnTime],
+        ];
     }
 
     /**
