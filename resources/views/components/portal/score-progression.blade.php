@@ -24,7 +24,7 @@
     </div>
 
     <div class="relative mt-5">
-        <div class="absolute inset-x-0 top-3 h-0.5 rounded-full bg-white/[0.08]" aria-hidden="true">
+        <div class="absolute inset-x-0 top-[14px] h-0.5 rounded-full bg-white/[0.08]" aria-hidden="true">
             <div
                 class="h-full rounded-full bg-brand-gradient transition-all duration-700"
                 style="width: {{ $trackFill }}%"
@@ -40,34 +40,31 @@
                 @endphp
                 <li class="flex min-w-0 flex-1 flex-col items-center">
                     <span
-                        @class([
-                            'relative z-10 flex h-6 w-6 items-center justify-center rounded-full ring-2',
-                            'bg-brand-500/20 ring-brand-400/50' => $isCurrent,
-                            'bg-emerald-500/10 ring-emerald-500/30' => $isComplete,
-                            'bg-navy-900 ring-white/10' => $isFuture,
-                        ])
+                        class="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ring-4 ring-navy-900"
                         @if ($isCurrent) aria-current="step" @endif
                     >
-                        @if ($isComplete)
-                            <svg class="h-3 w-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true">
+                        @if ($isCurrent)
+                            <svg class="h-5 w-5" viewBox="0 0 20 20" aria-hidden="true">
+                                <circle cx="10" cy="10" r="10" fill="url(#scoreArcGradient)" />
+                            </svg>
+                        @elseif ($isComplete)
+                            <svg class="h-3 w-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-10.5" />
                             </svg>
-                        @elseif ($isCurrent)
-                            <span class="h-2 w-2 rounded-full bg-white"></span>
                         @else
-                            <span class="h-1.5 w-1.5 rounded-full bg-slate-600"></span>
+                            <span class="h-4 w-4 rounded-full border border-white/20 bg-navy-900"></span>
                         @endif
                     </span>
                     <span @class([
-                        'mt-2 w-full truncate text-center text-[10px] font-medium leading-tight sm:text-xs',
-                        'font-semibold text-white' => $isCurrent,
-                        'text-slate-400' => $isComplete,
-                        'text-slate-600' => $isFuture,
+                        'mt-1.5 w-full truncate text-center leading-tight',
+                        'text-xs font-semibold text-brand-300 sm:text-sm' => $isCurrent,
+                        'text-[10px] font-medium text-slate-500' => $isComplete,
+                        'text-[10px] text-slate-600' => $isFuture,
                     ])>{{ $stage->scaleLabel() }}</span>
                     <span @class([
                         'mt-0.5 text-center text-[9px] tabular-nums leading-tight',
-                        'text-slate-500' => $isCurrent || $isComplete,
-                        'text-slate-700' => $isFuture,
+                        'font-medium text-brand-400/70' => $isCurrent,
+                        'text-slate-600' => $isComplete || $isFuture,
                     ])>{{ $stage->scoreRangeLabel() }}</span>
                 </li>
             @endforeach
