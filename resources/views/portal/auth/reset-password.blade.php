@@ -1,6 +1,7 @@
 <x-guest-portal-layout>
     <div class="ui-card-elevated border-gradient p-8">
         <h2 class="text-xl font-semibold text-white">Choose a new password</h2>
+        <p class="mt-2 text-sm text-slate-400">Pick something secure — you will use it to sign in next time.</p>
 
         <form method="POST" action="{{ route('portal.password.store') }}" class="mt-6 space-y-5">
             @csrf
@@ -25,7 +26,7 @@
             </div>
 
             <x-primary-button class="w-full justify-center">
-                {{ __('Reset password') }}
+                Save password
             </x-primary-button>
         </form>
     </div>

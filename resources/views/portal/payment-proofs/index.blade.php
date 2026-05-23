@@ -1,6 +1,6 @@
-<x-tenant-portal-layout title="My submissions" description="Track payment proofs you've sent for review.">
+<x-tenant-portal-layout title="Proof you've sent" description="Track what is waiting for review.">
     <div class="mb-6">
-        <x-ui.button variant="secondary" :href="route('portal.dashboard')">Back to dashboard</x-ui.button>
+        <x-ui.button variant="secondary" :href="route('portal.dashboard')">Back home</x-ui.button>
     </div>
 
     <x-ui.card :padding="false">
@@ -25,15 +25,15 @@
                     @endif
                     @if ($proof->landlord_note && $proof->status->isFinal())
                         <p class="mt-2 rounded-lg bg-white/[0.03] px-3 py-2 text-sm text-slate-300">
-                            <span class="text-xs font-medium text-slate-500">Landlord:</span> {{ $proof->landlord_note }}
+                            <span class="text-xs font-medium text-slate-500">Note:</span> {{ $proof->landlord_note }}
                         </p>
                     @endif
-                    <a href="{{ route('portal.payment-proofs.file', $proof) }}" class="mt-3 inline-block text-xs font-medium text-brand-300 hover:text-white">Download file</a>
+                    <a href="{{ route('portal.payment-proofs.file', $proof) }}" class="mt-3 inline-block text-xs font-medium text-brand-300 hover:text-white">View file</a>
                 </div>
             @empty
                 <x-ui.empty-state
-                    title="No submissions yet"
-                    description="Upload proof from your dashboard when you've paid rent."
+                    title="Nothing sent yet"
+                    description="When you share proof from your home screen, it will show up here while it is reviewed."
                 />
             @endforelse
         </div>

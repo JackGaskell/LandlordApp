@@ -8,9 +8,9 @@
 
         <title>
             @isset($title)
-                {{ $title }} · Rent portal
+                {{ $title }} · {{ config('app.name') }}
             @else
-                Rent portal · {{ config('app.name') }}
+                {{ config('app.name') }}
             @endisset
         </title>
 
@@ -26,7 +26,7 @@
                     <div class="flex items-center gap-3">
                         <a href="{{ route('portal.dashboard') }}" class="text-sm font-semibold text-white">
                             {{ config('app.name') }}
-                            <span class="ml-1 rounded-md bg-brand-500/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-300">Tenant</span>
+                            <span class="ml-1 rounded-md bg-brand-500/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-300">Home</span>
                         </a>
                     </div>
 

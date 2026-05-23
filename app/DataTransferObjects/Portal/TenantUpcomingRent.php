@@ -30,7 +30,7 @@ readonly class TenantUpcomingRent
 
     public function portalPeriodLabel(): string
     {
-        return $this->dueDate->format('F Y').' rent';
+        return $this->dueDate->format('F').' rent';
     }
 
     public function portalDueDateLong(): string

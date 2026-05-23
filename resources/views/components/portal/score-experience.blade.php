@@ -24,7 +24,7 @@
     <div class="relative">
         {{-- Score hero --}}
         <div class="px-6 pb-2 pt-10 text-center sm:px-10 sm:pt-12">
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Tenant score</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Your score</p>
             <p class="mx-auto mt-4 max-w-sm text-sm leading-relaxed text-slate-400">{{ $profile->portalWhyItMatters() }}</p>
         </div>
 
@@ -83,20 +83,20 @@
                             'mt-2 hidden text-center text-[10px] font-medium leading-tight sm:block',
                             'text-white' => $isActive,
                             'text-slate-500' => ! $isActive,
-                        ])>{{ $scaleTier->label() }}</p>
+                        ])>{{ $scaleTier->scaleLabel() }}</p>
                     </div>
                 @endforeach
             </div>
             @if ($nextTier && $pointsToNext !== null && $profile->trackedPeriods > 0)
                 <p class="mt-4 text-center text-xs text-slate-500">
                     @if ($pointsToNext > 0)
-                        <span class="text-slate-300">{{ $pointsToNext }} points</span> to reach {{ $nextTier->label() }}
+                        <span class="text-slate-300">{{ $pointsToNext }} points</span> to {{ $nextTier->label() }}
                     @else
-                        Your next on-time payment could reach {{ $nextTier->label() }}
+                        Your next on-time month could reach {{ $nextTier->label() }}
                     @endif
                 </p>
             @elseif ($profile->trackedPeriods > 0 && $tier === $excellentTier)
-                <p class="mt-4 text-center text-xs text-slate-500">You have reached the highest tier</p>
+                <p class="mt-4 text-center text-xs text-slate-500">You are at the top tier — keep doing what works</p>
             @endif
         </div>
 
@@ -114,7 +114,7 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Payment streak</p>
+                        <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Streak</p>
                         <p class="mt-0.5 text-2xl font-bold tabular-nums text-white">
                             {{ $profile->currentStreak }}
                             <span class="text-sm font-medium text-slate-500">{{ str('month')->plural($profile->currentStreak) }}</span>
@@ -123,7 +123,7 @@
                 </div>
                 @if ($profile->bestStreak > $profile->currentStreak)
                     <div class="text-right">
-                        <p class="text-xs text-slate-500">Best</p>
+                        <p class="text-xs text-slate-500">Best run</p>
                         <p class="text-sm font-semibold text-slate-300">{{ $profile->bestStreak }}</p>
                     </div>
                 @endif
@@ -156,7 +156,7 @@
 
         {{-- Achievements --}}
         <div class="px-6 py-6 sm:px-10">
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Milestones</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Wins along the way</p>
             <ul class="mt-3 flex flex-wrap gap-2">
                 @foreach ($achievements as $achievement)
                     <li @class([
@@ -180,13 +180,13 @@
         {{-- Why + How --}}
         <div class="grid gap-px border-t border-white/[0.06] bg-white/[0.06] sm:grid-cols-2">
             <div class="bg-navy-900 px-6 py-6 sm:px-8">
-                <h3 class="text-sm font-semibold text-white">Why your score matters</h3>
+                <h3 class="text-sm font-semibold text-white">Why it matters</h3>
                 <p class="mt-2 text-sm leading-relaxed text-slate-400">
-                    Landlords use payment history to assess reliability. A strong score shows you pay on time and take your tenancy seriously.
+                    A consistent payment record builds trust over time. Your score is a simple way to see that progress — and to show you take your tenancy seriously.
                 </p>
             </div>
             <div class="bg-navy-900 px-6 py-6 sm:px-8">
-                <h3 class="text-sm font-semibold text-white">How to improve</h3>
+                <h3 class="text-sm font-semibold text-white">Keep it growing</h3>
                 <p class="mt-2 text-sm leading-relaxed text-slate-400">{{ $profile->portalImprovementFocus() }}</p>
                 <ul class="mt-4 space-y-2">
                     @foreach ($profile->portalMaintainActions() as $action)

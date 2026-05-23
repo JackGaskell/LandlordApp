@@ -31,7 +31,7 @@ readonly class TenantPaymentStatusSummary
     {
         return match ($this->portalPrimaryAction()) {
             'pay' => 'Pay now',
-            'upload' => 'Upload proof of payment',
+            'upload' => 'I\'ve paid — share proof',
             default => '',
         };
     }
@@ -48,12 +48,7 @@ readonly class TenantPaymentStatusSummary
 
     public function portalStatusLabel(): string
     {
-        return match ($this->status) {
-            PaymentStatus::Paid => 'Paid',
-            PaymentStatus::DueSoon => 'Due soon',
-            PaymentStatus::Overdue => 'Overdue',
-            PaymentStatus::PartiallyPaid => 'Partially paid',
-        };
+        return $this->status->portalLabel();
     }
 
     public function portalStatusTone(): string
@@ -69,10 +64,20 @@ readonly class TenantPaymentStatusSummary
     public function portalNextStep(): string
     {
         return match ($this->status) {
-            PaymentStatus::Paid => 'You\'re all set for this period.',
-            PaymentStatus::DueSoon => 'Pay on or before the due date to protect your score.',
-            PaymentStatus::Overdue => 'Pay as soon as you can, then upload proof to update your record.',
-            PaymentStatus::PartiallyPaid => 'Complete the remaining amount or upload proof when ready.',
+            PaymentStatus::Paid => 'You are all set for this month. Nice work staying on track.',
+            PaymentStatus::DueSoon => 'Paying on or before the due date keeps your score and streak moving in the right direction.',
+            PaymentStatus::Overdue => 'If you have already paid, sharing proof helps keep your record accurate. Your score may be affected until payment is confirmed.',
+            PaymentStatus::PartiallyPaid => 'When the rest is paid, upload proof or complete the amount — we will update your record from there.',
         };
+    }
+
+    public function portalUploadToggleHide(): string
+    {
+        return 'Close';
+    }
+
+    public function portalUploadToggleShow(): string
+    {
+        return 'Already paid? Share proof';
     }
 }

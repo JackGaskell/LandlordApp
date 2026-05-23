@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="theme-color" content="#0a1222">
 
-        <title>Rent portal · {{ config('app.name') }}</title>
+        <title>{{ config('app.name') }}</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
@@ -20,9 +20,9 @@
 
             <div class="relative mx-auto w-full max-w-md">
                 <div class="mb-8 text-center">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-brand-300">Tenant rent portal</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-brand-300">Your home</p>
                     <h1 class="mt-2 text-2xl font-semibold text-white">{{ config('app.name') }}</h1>
-                    <p class="mt-2 text-sm text-slate-400">Stay on top of rent, track your progress, and build reliability.</p>
+                    <p class="mt-2 text-sm text-slate-400">Pay rent on time, build your score, and stay in control — all in one calm place.</p>
                 </div>
 
                 {{ $slot }}

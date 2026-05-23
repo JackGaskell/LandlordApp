@@ -63,13 +63,13 @@ readonly class TenantReliabilityProfile
 
     public function portalWhyItMatters(): string
     {
-        return 'Your tenant score reflects how consistently you pay rent on time. A strong score helps you build a trusted rental record.';
+        return 'A strong score shows you pay rent consistently — it helps you build a rental record you can be proud of.';
     }
 
     public function portalHeadline(): string
     {
         if ($this->trackedPeriods === 0) {
-            return 'Your score starts with your first payment';
+            return 'Your score begins with your first on-time payment';
         }
 
         return $this->scoreTier()->portalSummary();
@@ -78,11 +78,11 @@ readonly class TenantReliabilityProfile
     public function portalMessage(): string
     {
         if ($this->trackedPeriods === 0) {
-            return 'Pay your next rent on time to begin building a record landlords can trust.';
+            return 'When your next rent lands on time, you start building a profile that reflects reliability.';
         }
 
         if ($this->currentStreak >= 3) {
-            return 'Keep your streak alive — '.$this->scoreTier()->portalEncouragement();
+            return 'Nice streak — '.$this->scoreTier()->portalEncouragement();
         }
 
         return $this->scoreTier()->portalEncouragement();
@@ -95,11 +95,11 @@ readonly class TenantReliabilityProfile
     {
         return [
             [
-                'label' => 'On-time payments',
+                'label' => 'On time',
                 'value' => (string) $this->totalOnTime,
                 'hint' => $this->trackedPeriods > 0
-                    ? 'Across '.$this->trackedPeriods.' tracked '.str('period')->plural($this->trackedPeriods)
-                    : 'Tracked once you have history',
+                    ? 'Across '.$this->trackedPeriods.' '.str('month')->plural($this->trackedPeriods)
+                    : 'Shows once you have history',
             ],
             [
                 'label' => 'Consistency',
@@ -107,9 +107,9 @@ readonly class TenantReliabilityProfile
                 'hint' => 'Last '.$this->consistencyWindowMonths.' months',
             ],
             [
-                'label' => 'Current streak',
+                'label' => 'Streak',
                 'value' => (string) $this->currentStreak,
-                'hint' => $this->currentStreak === 1 ? 'Month on time' : 'Months on time',
+                'hint' => $this->currentStreak === 1 ? 'Month in a row' : 'Months in a row',
             ],
         ];
     }
@@ -122,25 +122,25 @@ readonly class TenantReliabilityProfile
         return [
             [
                 'id' => 'first_on_time',
-                'label' => 'First on time',
-                'description' => 'Paid rent on time',
+                'label' => 'First win',
+                'description' => 'First on-time payment',
                 'unlocked' => $this->totalOnTime >= 1,
             ],
             [
                 'id' => 'streak_builder',
-                'label' => 'Streak builder',
-                'description' => '3+ months on time',
+                'label' => 'On a roll',
+                'description' => '3 months in a row',
                 'unlocked' => $this->currentStreak >= 3,
             ],
             [
                 'id' => 'steady_payer',
-                'label' => 'Steady payer',
+                'label' => 'Steady rhythm',
                 'description' => '80%+ consistency',
                 'unlocked' => $this->consistencyRate >= 80 && $this->trackedPeriods > 0,
             ],
             [
                 'id' => 'trusted_profile',
-                'label' => 'Trusted profile',
+                'label' => 'Trusted',
                 'description' => 'Reached Trusted tier',
                 'unlocked' => in_array($this->scoreTier(), [TenantScoreTier::Trusted, TenantScoreTier::Excellent], true),
             ],
@@ -153,29 +153,29 @@ readonly class TenantReliabilityProfile
     public function portalMaintainActions(): array
     {
         return [
-            'Pay rent on or before the due date',
-            'Keep your on-time streak going each month',
-            'Upload payment proof promptly after you pay',
+            'Pay on or before your due date',
+            'Keep your monthly streak going',
+            'Share proof after you pay so your record stays accurate',
         ];
     }
 
     public function portalImprovementFocus(): string
     {
         if ($this->trackedPeriods === 0) {
-            return 'Your first on-time payment establishes your score and begins your rental record.';
+            return 'Your first on-time payment is what kicks everything off — score, streak, and consistency.';
         }
 
         $next = $this->portalNextTier();
 
         if ($next === null) {
-            return 'You are at the highest tier. Maintain on-time payments to protect your score.';
+            return 'You are at the top tier. Keep doing what you are doing and your score stays protected.';
         }
 
         $points = $this->portalPointsToNextTier();
 
         return $points > 0
-            ? "About {$points} points to reach {$next->label()} — your next on-time payment is the most direct step."
-            : "You are close to {$next->label()}. One more on-time payment could move you up.";
+            ? "About {$points} points to {$next->label()} — your next on-time payment is the simplest way there."
+            : "You are almost at {$next->label()}. One more smooth month could do it.";
     }
 
     /**
@@ -189,14 +189,14 @@ readonly class TenantReliabilityProfile
     public function portalStreakMessage(): string
     {
         if ($this->currentStreak >= 3) {
-            return 'Keep your streak alive — every on-time month strengthens your record.';
+            return 'You are on a roll — each month you pay on time adds to your story.';
         }
 
         if ($this->currentStreak >= 1) {
-            return 'You are building momentum. Your next on-time payment extends this streak.';
+            return 'Momentum is building. Your next on-time payment keeps the streak alive.';
         }
 
-        return 'Your next on-time payment starts a fresh streak.';
+        return 'Your next on-time payment starts a fresh streak — one month at a time.';
     }
 
     public function portalHasPositiveRecentOutcome(): bool

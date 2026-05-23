@@ -26,6 +26,17 @@ enum PaymentStatus: string
         };
     }
 
+    /** Calm, supportive copy for the tenant portal */
+    public function portalLabel(): string
+    {
+        return match ($this) {
+            self::Paid => 'All done',
+            self::DueSoon => 'Coming up',
+            self::Overdue => 'Needs confirming',
+            self::PartiallyPaid => 'Almost there',
+        };
+    }
+
     public function badgeClasses(): string
     {
         return match ($this) {

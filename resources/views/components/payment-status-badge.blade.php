@@ -1,4 +1,4 @@
-@props(['status'])
+@props(['status', 'portal' => false])
 
 @php
     $paymentStatus = $status instanceof \App\Enums\PaymentStatus
@@ -11,8 +11,10 @@
         \App\Enums\PaymentStatus::Overdue => 'danger',
         \App\Enums\PaymentStatus::PartiallyPaid => 'info',
     };
+
+    $label = $portal ? $paymentStatus->portalLabel() : $paymentStatus->label();
 @endphp
 
 <x-ui.badge :tone="$tone" {{ $attributes }}>
-    {{ $paymentStatus->label() }}
+    {{ $label }}
 </x-ui.badge>

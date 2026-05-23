@@ -138,8 +138,8 @@ class TenantPaymentLifecycleService
         if (! $payment) {
             return new TenantPaymentStatusSummary(
                 status: PaymentStatus::DueSoon,
-                headline: 'All clear for now',
-                message: 'No open rent period right now. Your landlord will add the next period when it is due.',
+                headline: 'Nothing due right now',
+                message: 'When your next rent period is ready, it will show up here.',
                 canUploadProof: false,
                 canPayOnline: false,
             );
@@ -230,17 +230,17 @@ class TenantPaymentLifecycleService
         int $daysOverdue,
     ): string {
         return match ($status) {
-            TenantCollectionStatus::OnTrack => 'Your latest rent is recorded. Keep building your streak — consistency is what landlords notice.',
+            TenantCollectionStatus::OnTrack => 'Your latest rent is recorded — keep the rhythm going.',
             TenantCollectionStatus::Upcoming => $daysUntil === 0
-                ? 'Rent is due today. Paying on time keeps your reliability score climbing.'
+                ? 'Rent is due today. Paying on time is the easiest way to protect your score.'
                 : ($daysUntil === 1
-                    ? 'Rent is due tomorrow — a great time to get ahead of the due date.'
-                    : "You have {$daysUntil} days until rent is due. Planning ahead keeps your record strong."),
+                    ? 'Rent is due tomorrow — a good moment to get ahead of the date.'
+                    : "You have {$daysUntil} days until rent is due. A little planning goes a long way."),
             TenantCollectionStatus::ActionNeeded => $daysOverdue > 0
-                ? "This period is {$daysOverdue} ".str('day')->plural($daysOverdue).' past the due date. If you have already paid, upload proof and we will update your record.'
-                : 'This period is past the due date. Upload proof if you have paid so your landlord can confirm quickly.',
-            TenantCollectionStatus::PartialProgress => 'Part of this rent period is recorded. Finish the remainder or upload proof when you are ready.',
-            TenantCollectionStatus::Clear => 'There is no open rent period. Your landlord will add the next one when it is scheduled.',
+                ? "This payment is {$daysOverdue} ".str('day')->plural($daysOverdue).' past the due date. If you have paid, share proof so your record stays accurate.'
+                : 'This payment is past the due date. If you have paid, sharing proof helps us update your record.',
+            TenantCollectionStatus::PartialProgress => 'Part of this month is recorded. Finish the rest when you are ready, or share proof if you have paid.',
+            TenantCollectionStatus::Clear => 'Nothing due at the moment. Your next rent period will appear here when it is ready.',
         };
     }
 
@@ -252,8 +252,12 @@ class TenantPaymentLifecycleService
     ): string {
         if ($isOverdue && $daysOverdue > 0) {
             return $daysOverdue === 1
-                ? '1 day past due'
-                : "{$daysOverdue} days past due";
+                ? '1 day past due date'
+                : "{$daysOverdue} days past due date";
+        }
+
+        if ($isOverdue) {
+            return 'Past due date';
         }
 
         if ($dueDate->isToday()) {
@@ -274,10 +278,10 @@ class TenantPaymentLifecycleService
     protected function statusHeadline(PaymentStatus $status): string
     {
         return match ($status) {
-            PaymentStatus::Paid => 'Rent recorded',
-            PaymentStatus::DueSoon => 'Upcoming rent',
-            PaymentStatus::Overdue => 'Outstanding rent',
-            PaymentStatus::PartiallyPaid => 'Partially recorded',
+            PaymentStatus::Paid => 'All done for this month',
+            PaymentStatus::DueSoon => 'Coming up',
+            PaymentStatus::Overdue => 'Let\'s get this sorted',
+            PaymentStatus::PartiallyPaid => 'Almost there',
         };
     }
 
@@ -285,11 +289,11 @@ class TenantPaymentLifecycleService
     {
         return match ($status) {
             PaymentStatus::Paid => $payment->paid_at
-                ? 'Paid on '.$payment->paid_at->format('j M Y').'. Thank you for staying on track.'
-                : 'This period is marked as paid.',
-            PaymentStatus::DueSoon => 'Your rent is coming up. Paying on or before the due date keeps your streak and score growing.',
-            PaymentStatus::Overdue => 'If you have already paid, upload proof below so your landlord can confirm it and restore your record.',
-            PaymentStatus::PartiallyPaid => 'Part of this period is recorded. Upload proof or complete the remaining amount when you are ready.',
+                ? 'Recorded on '.$payment->paid_at->format('j M Y').' — thanks for staying consistent.'
+                : 'This month is marked as paid.',
+            PaymentStatus::DueSoon => 'Your rent is coming up. Paying on or before the due date keeps your score and streak healthy.',
+            PaymentStatus::Overdue => 'If you have already paid, share proof below so your record can be updated. Your score may be affected until payment is confirmed.',
+            PaymentStatus::PartiallyPaid => 'Part of this month is on record. Share proof or finish the rest when you are ready.',
         };
     }
 
@@ -302,15 +306,15 @@ class TenantPaymentLifecycleService
                 return 'Paid '.$payment->paid_at->format('j M Y').' · on time';
             }
 
-            return 'Paid '.$payment->paid_at->format('j M Y').' · '.$late.' '.str('day')->plural($late).' late';
+            return 'Paid '.$payment->paid_at->format('j M Y').' · '.$late.' '.str('day')->plural($late).' after due date';
         }
 
         if ($payment->status === PaymentStatus::Overdue) {
             $days = $this->daysOverdue($payment);
 
             return $days > 0
-                ? 'Due '.$payment->due_date->format('j M Y').' · '.$days.' '.str('day')->plural($days).' overdue'
-                : 'Due '.$payment->due_date->format('j M Y').' · overdue';
+                ? 'Due '.$payment->due_date->format('j M Y').' · '.$days.' '.str('day')->plural($days).' past due date'
+                : 'Due '.$payment->due_date->format('j M Y').' · needs confirming';
         }
 
         return 'Due '.$payment->due_date->format('j M Y');

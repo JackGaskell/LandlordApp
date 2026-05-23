@@ -1,6 +1,6 @@
 <x-tenant-portal-layout
     :title="'Hi, '.$tenant->firstName()"
-    description="Your tenant score reflects how reliably you pay rent."
+    description="Stay on top of rent and watch your score grow."
 >
     <div class="mx-auto max-w-2xl space-y-8">
         <x-portal.score-experience :profile="$snapshot->reliability" />

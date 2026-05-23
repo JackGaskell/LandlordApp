@@ -45,6 +45,6 @@ class PaymentProofController extends Controller
 
         return redirect()
             ->route('portal.dashboard')
-            ->with('status', 'Thanks — your payment proof was submitted. Your landlord will review it soon.');
+            ->with('status', 'Thanks — we have your proof. We will update your record once it has been reviewed.');
     }
 }

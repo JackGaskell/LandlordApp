@@ -34,15 +34,15 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                 </svg>
             </span>
-            <span class="mt-3 block text-sm font-medium text-white" x-show="! fileName">Choose a file or tap to browse</span>
+            <span class="mt-3 block text-sm font-medium text-white" x-show="! fileName">Tap to add receipt or screenshot</span>
             <span class="mt-3 block text-sm font-medium text-emerald-300" x-show="fileName" x-text="fileName" x-cloak></span>
-            <span class="mt-1 block text-xs text-slate-500">PDF, JPG, or PNG · max {{ (int) config('landlord.payment_proofs.max_kb') }}KB</span>
+            <span class="mt-1 block text-xs text-slate-500">PDF, JPG, or PNG · up to {{ (int) config('landlord.payment_proofs.max_kb') }}KB</span>
         </label>
         <x-input-error :messages="$errors->get('proof')" class="mt-2" />
     </div>
 
     <div>
-        <label for="claimed_paid_at" class="text-xs font-medium uppercase tracking-wider text-slate-500">Date paid</label>
+        <label for="claimed_paid_at" class="text-xs font-medium uppercase tracking-wider text-slate-500">When did you pay?</label>
         <input
             id="claimed_paid_at"
             name="claimed_paid_at"
@@ -78,7 +78,7 @@
                 name="note"
                 type="text"
                 value="{{ old('note') }}"
-                placeholder="Bank transfer reference"
+                placeholder="e.g. Bank transfer ref 48291"
                 class="ui-input w-full"
             />
             <x-input-error :messages="$errors->get('note')" class="mt-2" />
@@ -86,6 +86,6 @@
     </div>
 
     <x-ui.button type="submit" size="xl" class="justify-center">
-        Submit proof
+        Send for review
     </x-ui.button>
 </form>

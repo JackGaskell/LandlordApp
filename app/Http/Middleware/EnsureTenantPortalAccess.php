@@ -20,7 +20,7 @@ class EnsureTenantPortalAccess
 
             return redirect()
                 ->route('portal.login')
-                ->with('status', 'Your rent portal access is not active yet. Please use the invite link from your landlord.');
+                ->with('status', 'Your account is not active yet. Use the invite link you were sent to get started.');
         }
 
         return $next($request);

@@ -31,13 +31,13 @@ class TenantPortalDashboardTest extends TestCase
         $this->actingAs($tenant, 'tenant')
             ->get(route('portal.dashboard'))
             ->assertOk()
-            ->assertSee('Tenant score')
-            ->assertSee('Why your score matters')
-            ->assertSee('How to improve')
-            ->assertSee('Payment streak')
-            ->assertSee('Milestones')
-            ->assertSee('Upload proof of payment')
-            ->assertSee('Recent payments');
+            ->assertSee('Your score')
+            ->assertSee('Why it matters')
+            ->assertSee('Keep it growing')
+            ->assertSee('Streak')
+            ->assertSee('Wins along the way')
+            ->assertSee('I\'ve paid — share proof')
+            ->assertSee('Your payments');
     }
 
     public function test_portal_snapshot_reflects_overdue_collection_state(): void

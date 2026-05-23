@@ -36,9 +36,9 @@
             @if ($status->portalIsPaid())
                 <p class="mt-3 text-sm text-emerald-300">
                     @if ($payment?->paid_at)
-                        Paid {{ $payment->paid_at->format('j M Y') }}
+                        Recorded {{ $payment->paid_at->format('j M Y') }}
                     @else
-                        Recorded as paid
+                        Marked as paid
                     @endif
                 </p>
                 <p class="mt-1 text-sm text-slate-400">{{ $status->portalNextStep() }}</p>
@@ -60,7 +60,7 @@
             <div class="mt-8 px-6 pb-6 sm:px-8 sm:pb-8">
                 @if ($primaryAction === 'pay')
                     <x-ui.button href="#" size="xl" class="justify-center shadow-glow">
-                        Pay now
+                        {{ $status->portalPrimaryActionLabel() }}
                     </x-ui.button>
 
                     @if ($status->canUploadProof)
@@ -68,7 +68,7 @@
                             type="button"
                             class="mt-4 w-full text-center text-sm font-medium text-slate-400 transition-colors hover:text-white"
                             @click="showUpload = ! showUpload"
-                            x-text="showUpload ? 'Hide upload form' : 'Already paid? Upload proof'"
+                            x-text="showUpload ? @js($status->portalUploadToggleHide()) : @js($status->portalUploadToggleShow())"
                         ></button>
                     @endif
                 @else
@@ -79,11 +79,11 @@
                         @click="showUpload = ! showUpload"
                         x-show="! showUpload"
                     >
-                        Upload proof of payment
+                        {{ $status->portalPrimaryActionLabel() }}
                     </x-ui.button>
 
                     @if ($payOnlineComingSoon)
-                        <p class="mt-4 text-center text-xs text-slate-500">Card payments coming soon</p>
+                        <p class="mt-4 text-center text-xs text-slate-500">Pay by card — coming soon</p>
                     @endif
                 @endif
 
@@ -99,6 +99,7 @@
                         x-cloak
                         class="mt-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6"
                     >
+                        <p class="mb-5 text-sm text-slate-400">A quick photo or PDF is enough — we will update your record once it is reviewed.</p>
                         <x-portal.proof-upload :payment-id="$paymentId" :payment="$payment" />
                     </div>
                 @endif
@@ -113,8 +114,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-10.5" />
                 </svg>
             </div>
-            <p class="mt-4 text-lg font-semibold text-white">All clear</p>
-            <p class="mt-2 text-sm text-slate-400">No payment due right now.</p>
+            <p class="mt-4 text-lg font-semibold text-white">You are all caught up</p>
+            <p class="mt-2 text-sm text-slate-400">Nothing to pay right now. We will let you know when the next month is ready.</p>
         </div>
     @endif
 </section>
