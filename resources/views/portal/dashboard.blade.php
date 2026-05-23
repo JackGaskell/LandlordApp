@@ -1,34 +1,18 @@
 <x-tenant-portal-layout
     :title="'Hi, '.$tenant->firstName()"
-    description="Your rent health at a glance — build your score, streak, and consistency."
+    description="Your tenant score reflects how reliably you pay rent."
 >
-    <div class="space-y-6">
-        <x-portal.collection-status :collection="$snapshot->collection" />
+    <div class="mx-auto max-w-2xl space-y-8">
+        <x-portal.score-experience :profile="$snapshot->reliability" />
 
-        <x-portal.payment-summary-cards :cards="$snapshot->summaryCards" />
+        <x-portal.payment-action-card
+            :upcoming="$snapshot->upcomingRent"
+            :status="$snapshot->paymentStatus"
+            :payment-id="$snapshot->collection->paymentId"
+            :payment="$snapshot->currentPayment"
+            :pay-online-coming-soon="$snapshot->payOnlineComingSoon"
+        />
 
-        <x-portal.upcoming-rent :upcoming="$snapshot->upcomingRent" />
-
-        <x-portal.reliability-hero :profile="$snapshot->reliability" />
-
-        <div class="grid gap-6 lg:grid-cols-2">
-            <x-portal.streak-counter :profile="$snapshot->reliability" />
-            <x-portal.consistency-meter :profile="$snapshot->reliability" />
-        </div>
-
-        <div class="grid gap-6 lg:grid-cols-2">
-            <x-portal.payment-status
-                :status="$snapshot->paymentStatus"
-                :payment-id="$snapshot->collection->paymentId"
-                :payment="$snapshot->currentPayment"
-                :pay-online-coming-soon="$snapshot->payOnlineComingSoon"
-            />
-            <x-portal.payment-timeline :timeline="$snapshot->reliability->timeline" />
-        </div>
-
-        <div class="grid gap-6 lg:grid-cols-2">
-            <x-portal.payment-history :items="$snapshot->paymentHistory" />
-            <x-portal.recent-activity :items="$snapshot->recentActivity" />
-        </div>
+        <x-portal.payment-history :items="$snapshot->paymentHistory" />
     </div>
 </x-tenant-portal-layout>

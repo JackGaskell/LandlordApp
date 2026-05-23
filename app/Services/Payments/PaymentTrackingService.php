@@ -24,6 +24,30 @@ class PaymentTrackingService
 
     public function sync(PaymentHistory $payment): PaymentHistory
     {
+        $payment = $this->syncPaymentRecord($payment);
+        $this->refreshTenantReliability($payment->tenant);
+
+        return $payment;
+    }
+
+    /**
+     * Sync all open rent periods for a tenant, then recalculate reliability once.
+     */
+    public function syncOutstandingPaymentsForTenant(Tenant $tenant): void
+    {
+        $payments = $tenant->paymentHistories()->whereNull('paid_at')->get();
+
+        foreach ($payments as $payment) {
+            $this->syncPaymentRecord($payment);
+        }
+
+        if ($payments->isNotEmpty()) {
+            $this->refreshTenantReliability($tenant);
+        }
+    }
+
+    public function syncPaymentRecord(PaymentHistory $payment): PaymentHistory
+    {
         return PaymentHistory::withoutEvents(function () use ($payment) {
             $this->paymentStatus->sync($payment);
             $payment->refresh();
@@ -40,8 +64,6 @@ class PaymentTrackingService
                 'days_late' => $daysLate,
                 'payment_method' => $payment->payment_method,
             ])->save();
-
-            $this->refreshTenantReliability($payment->tenant);
 
             return $payment->fresh();
         });

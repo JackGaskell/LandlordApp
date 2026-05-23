@@ -63,12 +63,12 @@
                 </div>
             </header>
 
-            <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+            <main class="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
                 @if ($title ?? false)
-                    <div class="mb-8">
+                    <div class="mb-10 text-center">
                         <h1 class="text-2xl font-semibold tracking-tight text-white sm:text-3xl">{{ $title }}</h1>
                         @if ($description ?? false)
-                            <p class="mt-2 text-sm text-slate-400 sm:text-base">{{ $description }}</p>
+                            <p class="mt-2 text-sm text-slate-400">{{ $description }}</p>
                         @endif
                     </div>
                 @endif

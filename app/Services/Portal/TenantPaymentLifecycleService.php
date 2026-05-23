@@ -11,7 +11,7 @@ use App\Enums\PaymentStatus;
 use App\Enums\TenantCollectionStatus;
 use App\Models\PaymentHistory;
 use App\Models\Tenant;
-use App\Services\Payments\PaymentStatusService;
+use App\Services\Payments\PaymentTrackingService;
 use App\Services\Reliability\LatePaymentDetector;
 use App\Services\Rent\RentScheduleService;
 use Carbon\CarbonInterface;
@@ -23,19 +23,17 @@ use Illuminate\Support\Collection;
 class TenantPaymentLifecycleService
 {
     public function __construct(
-        protected PaymentStatusService $paymentStatus,
+        protected PaymentTrackingService $paymentTracking,
         protected LatePaymentDetector $latePayments,
         protected RentScheduleService $rentSchedule,
     ) {}
 
     /**
-     * Keep open-period statuses aligned with due dates (read-path sync, no reliability churn).
+     * Sync open periods (status, outcome) and refresh tenant reliability for the portal.
      */
     public function refreshOpenPaymentStatuses(Tenant $tenant): void
     {
-        $tenant->paymentHistories()
-            ->whereNull('paid_at')
-            ->each(fn (PaymentHistory $payment) => $this->paymentStatus->sync($payment));
+        $this->paymentTracking->syncOutstandingPaymentsForTenant($tenant);
     }
 
     public function currentPeriod(Tenant $tenant): ?PaymentHistory
