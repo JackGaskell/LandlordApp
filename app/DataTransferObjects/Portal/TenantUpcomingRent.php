@@ -27,4 +27,14 @@ readonly class TenantUpcomingRent
     {
         return $this->isOverdue ? 'Outstanding rent' : 'Upcoming rent';
     }
+
+    public function portalPeriodLabel(): string
+    {
+        return $this->dueDate->format('F Y').' rent';
+    }
+
+    public function portalDueDateLong(): string
+    {
+        return $this->dueDate->format('l, j M Y');
+    }
 }

@@ -16,6 +16,7 @@
         'sm' => 'px-3 py-2 text-xs rounded-lg',
         'md' => '',
         'lg' => 'px-5 py-3 text-base',
+        'xl' => 'w-full rounded-2xl px-6 py-4 text-base font-semibold',
     ];
     $classes = ($variants[$variant] ?? $variants['primary']).' '.($sizes[$size] ?? '');
 @endphp

@@ -36,7 +36,7 @@ class TenantPortalDashboardTest extends TestCase
             ->assertSee('How to improve')
             ->assertSee('Payment streak')
             ->assertSee('Milestones')
-            ->assertSee('Next payment')
+            ->assertSee('Upload proof of payment')
             ->assertSee('Recent payments');
     }
 

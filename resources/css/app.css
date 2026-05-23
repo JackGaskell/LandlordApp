@@ -167,6 +167,20 @@
         @apply font-medium text-accent-teal transition-colors hover:text-accent-cyan;
     }
 
+    .ui-file-drop {
+        @apply relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed
+            border-white/10 bg-white/[0.02] px-6 py-8 text-center transition-all duration-200 ease-smooth
+            hover:border-brand-500/30 hover:bg-brand-500/[0.04];
+    }
+
+    .ui-file-drop-active {
+        @apply border-brand-500/40 bg-brand-500/[0.06];
+    }
+
+    .ui-file-drop-has-file {
+        @apply border-emerald-500/25 bg-emerald-500/[0.04];
+    }
+
     .ui-topbar {
         @apply sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4
             border-b border-white/[0.06] bg-navy-950/80 px-4 backdrop-blur-xl sm:px-6 lg:px-8;
