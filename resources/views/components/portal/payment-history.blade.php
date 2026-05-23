@@ -1,15 +1,15 @@
 @props(['items'])
 
 <section>
-    <div class="mb-2 flex items-baseline justify-between gap-2 px-1">
+    <div class="mb-3 flex items-baseline justify-between gap-2">
         <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500">History</h3>
         <span class="text-[10px] text-slate-600">Last {{ min(4, $items->count()) }} months</span>
     </div>
 
-    <div class="divide-y divide-white/[0.04] rounded-xl bg-white/[0.02]">
+    <div class="overflow-hidden rounded-2xl bg-white/[0.03] ring-1 ring-white/[0.06]">
         @forelse ($items->take(4) as $item)
             <div @class([
-                'flex items-center justify-between gap-3 px-4 py-2.5',
+                'flex items-center justify-between gap-3 border-b border-white/[0.04] px-4 py-3 last:border-b-0',
                 'bg-brand-500/[0.04]' => $item->isCurrentPeriod,
             ])>
                 <div class="min-w-0 flex items-center gap-3">
@@ -24,7 +24,7 @@
                 <x-payment-status-badge :status="$item->status" portal class="!text-[10px]" />
             </div>
         @empty
-            <p class="px-4 py-6 text-center text-xs text-slate-500">Payments will appear here as you go.</p>
+            <p class="px-4 py-8 text-center text-sm text-slate-500">Payments will appear here as you go.</p>
         @endforelse
     </div>
 </section>

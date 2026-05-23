@@ -10,7 +10,7 @@
         : 0;
 @endphp
 
-<div class="min-w-0 sm:pt-2">
+<div class="min-w-0">
     <div class="space-y-1">
         <p class="text-sm font-semibold text-white">
             {{ $profile->portalProgressionCurrentLine() }}
@@ -24,8 +24,11 @@
     </div>
 
     <div class="relative mt-5">
-        <div class="absolute left-0 right-0 top-[11px] h-0.5 rounded-full bg-white/[0.08]" aria-hidden="true">
-            <div class="h-full rounded-full bg-brand-gradient transition-all duration-700" style="width: {{ $trackFill }}%"></div>
+        <div class="absolute inset-x-0 top-3 h-0.5 rounded-full bg-white/[0.08]" aria-hidden="true">
+            <div
+                class="h-full rounded-full bg-brand-gradient transition-all duration-700"
+                style="width: {{ $trackFill }}%"
+            ></div>
         </div>
 
         <ol class="relative flex justify-between gap-1">
@@ -38,15 +41,15 @@
                 <li class="flex min-w-0 flex-1 flex-col items-center">
                     <span
                         @class([
-                            'relative z-10 flex h-6 w-6 items-center justify-center rounded-full ring-2 transition-all',
-                            'bg-brand-gradient ring-brand-400/40 shadow-glow' => $isCurrent,
-                            'bg-accent-teal/20 ring-accent-teal/30' => $isComplete,
+                            'relative z-10 flex h-6 w-6 items-center justify-center rounded-full ring-2',
+                            'bg-brand-500/20 ring-brand-400/50' => $isCurrent,
+                            'bg-emerald-500/10 ring-emerald-500/30' => $isComplete,
                             'bg-navy-900 ring-white/10' => $isFuture,
                         ])
                         @if ($isCurrent) aria-current="step" @endif
                     >
                         @if ($isComplete)
-                            <svg class="h-3 w-3 text-accent-teal" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true">
+                            <svg class="h-3 w-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-10.5" />
                             </svg>
                         @elseif ($isCurrent)
@@ -57,7 +60,7 @@
                     </span>
                     <span @class([
                         'mt-2 w-full truncate text-center text-[10px] font-medium leading-tight sm:text-xs',
-                        'text-white' => $isCurrent,
+                        'font-semibold text-white' => $isCurrent,
                         'text-slate-400' => $isComplete,
                         'text-slate-600' => $isFuture,
                     ])>{{ $stage->scaleLabel() }}</span>

@@ -4,18 +4,17 @@
     $scoreProgress = $profile->portalScoreProgressPercent();
     $scoreDisplay = $profile->portalScoreDisplay();
     $scoreSubtitle = $profile->portalScoreSubtitle();
-    $scoreLabelSize = $profile->portalScoreIsEstablished() ? 17 : 13;
+    $scoreLabelSize = $profile->portalScoreIsEstablished() ? 20 : 14;
 @endphp
 
-<section {{ $attributes->merge(['class' => 'relative h-full rounded-2xl bg-navy-900/90']) }}>
+<section {{ $attributes->merge(['class' => 'relative rounded-2xl bg-navy-900/90 ring-1 ring-white/[0.06]']) }}>
     <div class="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl" aria-hidden="true">
-        <div class="absolute inset-0 bg-brand-gradient-soft opacity-40"></div>
-        <div class="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-brand-500/10 blur-3xl"></div>
+        <div class="absolute inset-0 bg-brand-gradient-soft opacity-25"></div>
     </div>
 
-    <div class="relative flex h-full flex-col p-5 sm:p-6 lg:p-7">
-        <div class="flex flex-1 flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
-            <div class="mx-auto w-32 shrink-0 sm:mx-0 sm:w-36">
+    <div class="relative p-5 sm:p-6">
+        <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-8">
+            <div class="mx-auto w-40 shrink-0 sm:mx-0 sm:w-44">
                 <svg
                     class="block w-full"
                     viewBox="0 0 120 64"

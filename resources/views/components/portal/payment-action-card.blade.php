@@ -27,7 +27,7 @@
             <x-ui.badge :tone="$status->portalStatusTone()">{{ $status->portalStatusLabel() }}</x-ui.badge>
         </div>
 
-        <p class="mt-3 text-3xl font-bold tabular-nums tracking-tight text-white lg:text-4xl">
+        <p class="mt-2 text-3xl font-bold tabular-nums tracking-tight text-white">
             {{ $upcoming->amountFormatted() }}
         </p>
 
@@ -49,7 +49,7 @@
         @endif
 
         @if ($status->portalIsActionable())
-            <div class="mt-auto pt-5">
+            <div class="mt-auto pt-4">
                 @if ($primaryAction === 'pay')
                     <x-ui.button href="#" class="w-full justify-center shadow-glow">
                         {{ $status->portalPrimaryActionLabel() }}
