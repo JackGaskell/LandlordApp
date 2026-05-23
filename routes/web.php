@@ -14,7 +14,21 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
+    Route::get('payment-proofs', [\App\Http\Controllers\Landlord\PaymentProofController::class, 'index'])
+        ->name('payment-proofs.index');
+    Route::get('payment-proofs/{payment_proof}', [\App\Http\Controllers\Landlord\PaymentProofController::class, 'show'])
+        ->name('payment-proofs.show');
+    Route::get('payment-proofs/{payment_proof}/file', [\App\Http\Controllers\Landlord\PaymentProofFileController::class, 'show'])
+        ->name('payment-proofs.file');
+    Route::post('payment-proofs/{payment_proof}/approve', [\App\Http\Controllers\Landlord\PaymentProofReviewController::class, 'approve'])
+        ->name('payment-proofs.approve');
+    Route::post('payment-proofs/{payment_proof}/reject', [\App\Http\Controllers\Landlord\PaymentProofReviewController::class, 'reject'])
+        ->name('payment-proofs.reject');
+
     Route::resource('tenants', TenantController::class);
+
+    Route::post('tenants/{tenant}/portal', [\App\Http\Controllers\TenantPortalController::class, 'store'])
+        ->name('tenants.portal.store');
 
     Route::post('tenants/{tenant}/payments', [PaymentHistoryController::class, 'store'])
         ->name('tenants.payments.store');

@@ -14,7 +14,7 @@ Artisan::command('inspire', function () {
 |--------------------------------------------------------------------------
 */
 Schedule::command('rent:dispatch-reminders')
-    ->dailyAt('08:00')
+    ->dailyAt(config('landlord.reminders.dispatch_time', '08:00'))
     ->timezone(config('app.timezone'))
     ->withoutOverlapping()
     ->onOneServer()

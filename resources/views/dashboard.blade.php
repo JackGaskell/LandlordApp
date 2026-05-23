@@ -128,5 +128,5 @@
                 </div>
             </x-ui.card>
         </div>
-    </motion.div>
+    </div>
 </x-app-layout>

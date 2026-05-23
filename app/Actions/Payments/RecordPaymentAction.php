@@ -5,8 +5,7 @@ namespace App\Actions\Payments;
 use App\Enums\PaymentRecordedVia;
 use App\Models\PaymentHistory;
 use App\Models\Tenant;
-use App\Services\Payments\PaymentStatusService;
-use Carbon\Carbon;
+use App\Services\Payments\PaymentTrackingService;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -15,26 +14,21 @@ use Illuminate\Support\Facades\DB;
 class RecordPaymentAction
 {
     public function __construct(
-        protected PaymentStatusService $paymentStatus,
+        protected PaymentTrackingService $paymentTracking,
     ) {}
 
     public function execute(Tenant $tenant, array $data): PaymentHistory
     {
         return DB::transaction(function () use ($tenant, $data) {
-            $paidAt = isset($data['paid_at']) ? Carbon::parse($data['paid_at']) : null;
-            $dueDate = Carbon::parse($data['due_date']);
-            $amount = (float) $data['amount'];
-
-            $data['status'] = $this->paymentStatus->resolve(
-                $dueDate,
-                $paidAt,
-                $amount,
-                (float) $tenant->rent_amount,
-            );
-
             $data['recorded_via'] = PaymentRecordedVia::Manual;
 
-            return $tenant->paymentHistories()->create($data);
+            if (! isset($data['payment_method']) && isset($data['recorded_via'])) {
+                $data['payment_method'] = $this->paymentTracking->inferPaymentMethod($data['recorded_via']);
+            }
+
+            $payment = $tenant->paymentHistories()->create($data);
+
+            return $this->paymentTracking->sync($payment);
         });
     }
 }
