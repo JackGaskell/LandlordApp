@@ -231,6 +231,35 @@ readonly class TenantReliabilityProfile
         return $this->scoreTier()->portalEncouragement();
     }
 
+    public function portalProgressionCurrentLine(): string
+    {
+        return 'You\'re at the '.$this->scoreTier()->scaleLabel().' stage';
+    }
+
+    public function portalProgressionNextLine(): string
+    {
+        if ($this->trackedPeriods === 0) {
+            return 'Pay on time to begin';
+        }
+
+        $next = $this->portalNextTier();
+
+        if ($next === null) {
+            return 'Highest stage reached';
+        }
+
+        $points = $this->portalPointsToNextTier();
+
+        return $points > 0
+            ? "{$points} points to reach {$next->scaleLabel()}"
+            : "Almost at {$next->scaleLabel()}";
+    }
+
+    public function portalProgressionSupportLine(): string
+    {
+        return 'Pay rent on time to move up.';
+    }
+
     public function portalHasPositiveRecentOutcome(): bool
     {
         $latest = $this->timeline->first();

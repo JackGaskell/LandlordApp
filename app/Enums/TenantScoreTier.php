@@ -12,24 +12,18 @@ enum TenantScoreTier: string
 
     public function label(): string
     {
-        return match ($this) {
-            self::Excellent => 'Excellent',
-            self::Trusted => 'Trusted',
-            self::Reliable => 'Reliable',
-            self::Improving => 'Growing',
-            self::NeedsAttention => 'Finding your footing',
-        };
+        return $this->scaleLabel();
     }
 
-    /** Short labels for compact tier scale UI */
+    /** Short labels for the tenant score journey */
     public function scaleLabel(): string
     {
         return match ($this) {
             self::Excellent => 'Excellent',
             self::Trusted => 'Trusted',
-            self::Reliable => 'Solid',
+            self::Reliable => 'Reliable',
             self::Improving => 'Growing',
-            self::NeedsAttention => 'Focus',
+            self::NeedsAttention => 'Starting',
         };
     }
 
