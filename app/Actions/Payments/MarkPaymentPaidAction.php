@@ -2,8 +2,10 @@
 
 namespace App\Actions\Payments;
 
+use App\Enums\PaymentMethod;
 use App\Enums\PaymentRecordedVia;
 use App\Enums\PaymentStatus;
+use App\Services\Payments\PaymentTrackingService;
 use App\Enums\PaymentVerificationStatus;
 use App\Mail\Transactional\PaymentReceivedMail;
 use App\Models\PaymentHistory;
@@ -15,6 +17,10 @@ use Illuminate\Support\Facades\Mail;
  */
 class MarkPaymentPaidAction
 {
+    public function __construct(
+        protected PaymentTrackingService $paymentTracking,
+    ) {}
+
     public function execute(
         PaymentHistory $payment,
         ?PaymentVerificationStatus $verification = null,
@@ -25,9 +31,12 @@ class MarkPaymentPaidAction
                 'paid_at' => now(),
                 'verification_status' => $verification ?? PaymentVerificationStatus::Verified,
                 'recorded_via' => $payment->recorded_via ?? PaymentRecordedVia::Manual,
+                'payment_method' => $payment->payment_method ?? PaymentMethod::fromRecordedVia(
+                    $payment->recorded_via ?? PaymentRecordedVia::Manual,
+                ),
             ]);
 
-            $payment = $payment->fresh(['tenant.landlord']);
+            $payment = $this->paymentTracking->sync($payment)->load(['tenant.landlord']);
 
             if ($payment->tenant?->landlord) {
                 $landlord = $payment->tenant->landlord;

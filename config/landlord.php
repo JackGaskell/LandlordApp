@@ -3,8 +3,14 @@
 return [
 
     'reminders' => [
+        'dispatch_time' => env('REMINDER_DISPATCH_TIME', '08:00'),
         'days_before_due' => [7, 3, 1],
         'days_after_due' => [1, 3, 7],
+        /*
+        | Channels the dispatcher will attempt. Email respects landlord_settings.
+        | Add sms / push here once channel senders are implemented.
+        */
+        'enabled_channels' => ['email'],
     ],
 
     'collection' => [
@@ -15,6 +21,9 @@ return [
         'on_time_weight' => 1.0,
         'late_weight' => -0.5,
         'missed_weight' => -1.5,
+        'partial_weight' => -0.5,
+        'consistency_window_months' => 12,
+        'cache_ttl_minutes' => 30,
     ],
 
     /*
@@ -46,6 +55,21 @@ return [
     */
     'auth' => [
         'require_email_verification' => (bool) env('REQUIRE_EMAIL_VERIFICATION', false),
+    ],
+
+    'portal' => [
+        'invite_expiry_days' => (int) env('TENANT_PORTAL_INVITE_EXPIRY_DAYS', 7),
+        'proof_max_kb' => (int) env('TENANT_PAYMENT_PROOF_MAX_KB', 5120),
+        'proof_mimes' => ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'webp'],
+        'pay_online_coming_soon' => true,
+    ],
+
+    'payment_proofs' => [
+        'disk' => env('PAYMENT_PROOF_DISK', 'local'),
+        'directory' => 'payment-proofs',
+        'max_kb' => (int) env('TENANT_PAYMENT_PROOF_MAX_KB', 5120),
+        'allowed_mimes' => ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'webp'],
+        'allowed_extensions' => ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'webp'],
     ],
 
     /*

@@ -7,6 +7,7 @@ use App\Http\Requests\Tenant\StoreTenantRequest;
 use App\Http\Requests\Tenant\UpdateTenantRequest;
 use App\Models\Tenant;
 use App\Services\Rent\RentScheduleService;
+use App\Services\Reliability\TenantReliabilityProfileService;
 use App\Services\Tenants\TenantReliabilityService;
 use App\Services\Tenants\TenantService;
 use Illuminate\Http\RedirectResponse;
@@ -58,6 +59,7 @@ class TenantController extends Controller
         return view('tenants.show', [
             'tenant' => $tenant,
             'reliability' => $this->reliability->score($tenant),
+            'reliabilityProfile' => $this->reliabilityProfiles->profile($tenant),
             'nextDueDate' => $this->rentSchedule->nextDueDate($tenant),
         ]);
     }

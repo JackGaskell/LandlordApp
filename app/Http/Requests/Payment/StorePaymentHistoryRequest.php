@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Payment;
 
+use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentVerificationStatus;
 use App\Models\PaymentHistory;
@@ -28,6 +29,8 @@ class StorePaymentHistoryRequest extends FormRequest
             'paid_at' => ['nullable', 'date'],
             'status' => ['sometimes', Rule::enum(PaymentStatus::class)],
             'verification_status' => ['required', Rule::enum(PaymentVerificationStatus::class)],
+            'payment_method' => ['nullable', Rule::enum(PaymentMethod::class)],
+            'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

@@ -7,11 +7,14 @@ use App\Models\LandlordSetting;
 use App\Models\PaymentHistory;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\Payments\PaymentTrackingService;
+use Database\Seeders\Concerns\SeedsPortalDemoPayments;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class LandlordDemoSeeder extends Seeder
 {
+    use SeedsPortalDemoPayments;
     public function run(): void
     {
         $landlords = [
@@ -92,5 +95,9 @@ class LandlordDemoSeeder extends Seeder
             ->paid()
             ->for($inactive)
             ->create(['amount' => $inactive->rent_amount, 'due_date' => now()->subMonth()]);
+
+        if ($landlord->email === 'alex@landlordapp.test') {
+            $this->seedPortalDemoTenants($landlord, app(PaymentTrackingService::class));
+        }
     }
 }

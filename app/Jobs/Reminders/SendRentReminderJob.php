@@ -2,15 +2,16 @@
 
 namespace App\Jobs\Reminders;
 
-use App\Enums\ReminderType;
-use App\Models\PaymentHistory;
-use App\Notifications\RentDueReminderNotification;
+use App\Models\RentReminderDelivery;
+use App\Services\Reminders\RentReminderDeliveryService;
+use App\Services\Reminders\ReminderSendService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
- * Sends one rent reminder email for a specific payment period.
+ * Sends one rent reminder for a tracked delivery record.
  */
 class SendRentReminderJob implements ShouldQueue
 {
@@ -22,42 +23,45 @@ class SendRentReminderJob implements ShouldQueue
     public array $backoff = [30, 120, 300];
 
     public function __construct(
-        public int $paymentHistoryId,
-        public ReminderType $reminderType,
-        public int $daysOffset,
+        public int $rentReminderDeliveryId,
     ) {
         $this->onQueue(config('landlord.queues.reminders'));
     }
 
-    public function handle(): void
+    public function handle(ReminderSendService $sender): void
     {
-        $payment = PaymentHistory::query()
-            ->with(['tenant.landlord.landlordSetting'])
-            ->find($this->paymentHistoryId);
+        $delivery = RentReminderDelivery::query()->find($this->rentReminderDeliveryId);
 
-        if (! $payment) {
+        if (! $delivery) {
             return;
         }
 
-        $settings = $payment->tenant->landlord->landlordSetting;
+        $sender->send($delivery);
 
-        if ($settings && ! $settings->email_reminders_enabled) {
-            return;
+        Log::info('Rent reminder processed', [
+            'delivery_id' => $delivery->id,
+            'payment_id' => $delivery->payment_history_id,
+            'tenant_id' => $delivery->tenant_id,
+            'reminder_type' => $delivery->reminder_type->value,
+            'channel' => $delivery->channel->value,
+            'status' => $delivery->status->value,
+        ]);
+    }
+
+    public function failed(?Throwable $exception): void
+    {
+        $delivery = RentReminderDelivery::query()->find($this->rentReminderDeliveryId);
+
+        if ($delivery) {
+            app(RentReminderDeliveryService::class)->markFailed(
+                $delivery,
+                $exception?->getMessage() ?? 'Unknown error',
+            );
         }
 
-        if ($payment->status->isSettled()) {
-            return;
-        }
-
-        $payment->tenant->notify(
-            new RentDueReminderNotification($payment, $this->reminderType, $this->daysOffset),
-        );
-
-        Log::info('Rent reminder sent', [
-            'payment_id' => $payment->id,
-            'tenant_id' => $payment->tenant_id,
-            'reminder_type' => $this->reminderType->value,
-            'days_offset' => $this->daysOffset,
+        Log::error('Rent reminder job failed', [
+            'delivery_id' => $this->rentReminderDeliveryId,
+            'message' => $exception?->getMessage(),
         ]);
     }
 }

@@ -13,6 +13,13 @@
             'icon' => 'users',
         ],
         [
+            'label' => 'Payment proofs',
+            'route' => 'payment-proofs.index',
+            'active' => request()->routeIs('payment-proofs.*'),
+            'icon' => 'card',
+            'badge' => $pendingProofCount ?? 0,
+        ],
+        [
             'label' => 'Reminders',
             'route' => 'settings.edit',
             'active' => request()->routeIs('settings.*'),
@@ -39,6 +46,7 @@
                 :href="route($item['route'])"
                 :active="$item['active']"
                 :icon="$item['icon']"
+                :badge="($item['badge'] ?? 0) > 0 ? $item['badge'] : null"
             >
                 {{ $item['label'] }}
             </x-ui.sidebar-link>

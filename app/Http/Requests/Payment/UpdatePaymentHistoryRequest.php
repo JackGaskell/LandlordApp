@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Payment;
 
+use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentVerificationStatus;
 use Illuminate\Foundation\Http\FormRequest;
@@ -25,6 +26,8 @@ class UpdatePaymentHistoryRequest extends FormRequest
             'paid_at' => ['nullable', 'date'],
             'status' => ['sometimes', 'required', Rule::enum(PaymentStatus::class)],
             'verification_status' => ['sometimes', 'required', Rule::enum(PaymentVerificationStatus::class)],
+            'payment_method' => ['sometimes', 'nullable', Rule::enum(PaymentMethod::class)],
+            'notes' => ['sometimes', 'nullable', 'string', 'max:1000'],
         ];
     }
 }

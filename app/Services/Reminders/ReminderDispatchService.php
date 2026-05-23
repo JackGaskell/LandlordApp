@@ -2,14 +2,14 @@
 
 namespace App\Services\Reminders;
 
+use App\DataTransferObjects\Reminders\ReminderDispatchResult;
 use App\Enums\PaymentStatus;
-use App\Enums\ReminderType;
+use App\Enums\ReminderChannel;
 use App\Jobs\Reminders\SendRentReminderJob;
-use App\Models\LandlordSetting;
 use App\Models\PaymentHistory;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Finds payments that need a reminder today and queues SendRentReminderJob.
@@ -18,15 +18,21 @@ class ReminderDispatchService
 {
     public function __construct(
         protected ReminderScheduler $scheduler,
+        protected ReminderEligibilityService $eligibility,
+        protected RentReminderDeliveryService $deliveries,
+        protected ReminderChannelRegistry $channels,
     ) {}
 
-    /**
-     * @return array{queued: int, skipped: int}
-     */
-    public function dispatchDueReminders(?User $landlord = null, bool $dryRun = false): array
-    {
+    public function dispatchDueReminders(
+        ?User $landlord = null,
+        bool $dryRun = false,
+        ?Carbon $dispatchDate = null,
+    ): ReminderDispatchResult {
+        $dispatchDate ??= now();
         $queued = 0;
-        $skipped = 0;
+        $skippedDuplicate = 0;
+        $skippedIneligible = 0;
+        $skippedDisabled = 0;
 
         $landlords = $landlord
             ? collect([$landlord->load('landlordSetting')])
@@ -35,7 +41,7 @@ class ReminderDispatchService
         foreach ($landlords as $user) {
             $settings = $user->landlordSetting;
 
-            if (! $settings?->email_reminders_enabled) {
+            if (! $this->eligibility->landlordRemindersEnabled($settings)) {
                 continue;
             }
 
@@ -43,32 +49,56 @@ class ReminderDispatchService
 
             foreach ($this->openPaymentsForLandlord($user) as $payment) {
                 foreach ($schedule as $entry) {
-                    if (! $this->shouldSendToday($payment, $entry['offset'])) {
+                    if (! $this->eligibility->shouldSendOnDate($payment, $entry->signedOffset, $dispatchDate)) {
                         continue;
                     }
 
-                    if ($this->alreadySentToday($payment->id, $entry['type'], $entry['offset'])) {
-                        $skipped++;
+                    if (! $this->eligibility->paymentQualifiesForType($payment, $entry->type)) {
+                        $skippedIneligible++;
 
                         continue;
                     }
 
-                    if (! $dryRun) {
-                        SendRentReminderJob::dispatch(
-                            $payment->id,
-                            $entry['type'],
-                            $entry['offset'],
+                    foreach ($this->channels->enabledChannels() as $channel) {
+                        if ($channel === ReminderChannel::Email && ! $settings->email_reminders_enabled) {
+                            $skippedDisabled++;
+
+                            continue;
+                        }
+
+                        if ($dryRun) {
+                            $queued++;
+
+                            continue;
+                        }
+
+                        $delivery = $this->deliveries->recordPending(
+                            $payment,
+                            $entry->type,
+                            $entry->days,
+                            $channel,
+                            $dispatchDate->copy()->startOfDay(),
                         );
 
-                        $this->markSentToday($payment->id, $entry['type'], $entry['offset']);
-                    }
+                        if (! $delivery) {
+                            $skippedDuplicate++;
 
-                    $queued++;
+                            continue;
+                        }
+
+                        SendRentReminderJob::dispatch($delivery->id);
+                        $queued++;
+                    }
                 }
             }
         }
 
-        return ['queued' => $queued, 'skipped' => $skipped];
+        return new ReminderDispatchResult(
+            queued: $queued,
+            skippedDuplicate: $skippedDuplicate,
+            skippedIneligible: $skippedIneligible,
+            skippedDisabled: $skippedDisabled,
+        );
     }
 
     /**
@@ -78,32 +108,12 @@ class ReminderDispatchService
     {
         return PaymentHistory::query()
             ->forLandlord($landlord)
-            ->with(['tenant.landlord'])
+            ->with(['tenant'])
             ->whereIn('status', [
                 PaymentStatus::DueSoon,
                 PaymentStatus::Overdue,
                 PaymentStatus::PartiallyPaid,
             ])
             ->get();
-    }
-
-    protected function shouldSendToday(PaymentHistory $payment, int $offset): bool
-    {
-        return $payment->due_date->copy()->addDays($offset)->isToday();
-    }
-
-    protected function cacheKey(int $paymentId, ReminderType $type, int $offset): string
-    {
-        return "rent-reminder:{$paymentId}:{$type->value}:{$offset}:".now()->toDateString();
-    }
-
-    protected function alreadySentToday(int $paymentId, ReminderType $type, int $offset): bool
-    {
-        return Cache::has($this->cacheKey($paymentId, $type, $offset));
-    }
-
-    protected function markSentToday(int $paymentId, ReminderType $type, int $offset): void
-    {
-        Cache::put($this->cacheKey($paymentId, $type, $offset), true, now()->endOfDay());
     }
 }
