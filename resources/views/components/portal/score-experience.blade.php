@@ -4,7 +4,7 @@
     $scoreProgress = $profile->portalScoreProgressPercent();
     $scoreDisplay = $profile->portalScoreDisplay();
     $scoreSubtitle = $profile->portalScoreSubtitle();
-    $scoreLabelSize = $profile->portalScoreIsEstablished() ? 20 : 14;
+    $scoreLabelSize = $profile->portalScoreIsEstablished() ? 24 : 16;
 @endphp
 
 <section {{ $attributes->merge(['class' => 'relative rounded-2xl bg-navy-900/90 ring-1 ring-white/[0.06]']) }}>
@@ -14,7 +14,7 @@
 
     <div class="relative p-5 sm:p-6">
         <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-8">
-            <div class="mx-auto w-40 shrink-0 sm:mx-0 sm:w-44">
+            <div class="mx-auto w-48 shrink-0 sm:mx-0 sm:w-52 lg:w-56">
                 <svg
                     class="block w-full"
                     viewBox="0 0 120 64"
@@ -32,7 +32,7 @@
                         d="M 10 54 A 50 50 0 0 1 110 54"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="7"
+                        stroke-width="8"
                         stroke-linecap="round"
                         class="text-white/[0.08]"
                     />
@@ -41,7 +41,7 @@
                             d="M 10 54 A 50 50 0 0 1 110 54"
                             fill="none"
                             stroke="url(#scoreArcGradient)"
-                            stroke-width="7"
+                            stroke-width="8"
                             stroke-linecap="round"
                             pathLength="100"
                             stroke-dasharray="100"
@@ -64,12 +64,12 @@
                         text-anchor="middle"
                         fill="#64748b"
                         font-family="Inter, ui-sans-serif, system-ui, sans-serif"
-                        font-size="8"
+                        font-size="9"
                     >{{ $scoreSubtitle }}</text>
                 </svg>
             </div>
 
-            <div class="min-w-0 flex-1">
+            <div class="min-w-0 w-full flex-1">
                 <x-portal.score-progression :profile="$profile" />
             </div>
         </div>

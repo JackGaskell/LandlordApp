@@ -4,23 +4,17 @@
             Maintain and grow your <span class="text-gradient font-medium">tenant score</span>
         </p>
 
-        <div class="grid gap-4 lg:grid-cols-5 lg:items-start lg:gap-5">
-            <div class="flex min-h-0 flex-col gap-4 lg:col-span-3">
-                <x-portal.score-experience :profile="$snapshot->reliability" class="w-full" />
-                <x-portal.score-stats-strip :profile="$snapshot->reliability" />
-            </div>
+        <x-portal.score-experience :profile="$snapshot->reliability" />
 
-            <div class="flex min-h-0 lg:col-span-2">
-                <x-portal.payment-action-card
-                    class="w-full"
-                    :upcoming="$snapshot->upcomingRent"
-                    :status="$snapshot->paymentStatus"
-                    :payment-id="$snapshot->collection->paymentId"
-                    :payment="$snapshot->currentPayment"
-                    :pay-online-coming-soon="$snapshot->payOnlineComingSoon"
-                />
-            </div>
-        </div>
+        <x-portal.score-stats-strip :profile="$snapshot->reliability" />
+
+        <x-portal.payment-action-card
+            :upcoming="$snapshot->upcomingRent"
+            :status="$snapshot->paymentStatus"
+            :payment-id="$snapshot->collection->paymentId"
+            :payment="$snapshot->currentPayment"
+            :pay-online-coming-soon="$snapshot->payOnlineComingSoon"
+        />
 
         <x-portal.payment-history :items="$snapshot->paymentHistory" />
     </div>

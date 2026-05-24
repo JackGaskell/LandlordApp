@@ -305,15 +305,35 @@ readonly class TenantReliabilityProfile
     }
 
     /**
-     * @return list<array{label: string, value: string}>
+     * @return list<array{label: string, value: string, icon: string, tone: string}>
      */
     public function portalCompactStats(): array
     {
         return [
-            ['label' => 'On time', 'value' => (string) $this->totalOnTime],
-            ['label' => 'Late', 'value' => (string) $this->lateCount],
-            ['label' => 'Month streak', 'value' => (string) $this->currentStreak],
-            ['label' => 'Consistency', 'value' => $this->consistencyFormatted().'%'],
+            [
+                'label' => 'On time',
+                'value' => (string) $this->totalOnTime,
+                'icon' => 'check',
+                'tone' => 'success',
+            ],
+            [
+                'label' => 'Late',
+                'value' => (string) $this->lateCount,
+                'icon' => 'clock',
+                'tone' => 'warning',
+            ],
+            [
+                'label' => 'Month streak',
+                'value' => (string) $this->currentStreak,
+                'icon' => 'flame',
+                'tone' => $this->currentStreak > 0 ? 'streak' : 'default',
+            ],
+            [
+                'label' => 'Consistency',
+                'value' => $this->consistencyFormatted().'%',
+                'icon' => 'chart',
+                'tone' => 'brand',
+            ],
         ];
     }
 
