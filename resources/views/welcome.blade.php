@@ -20,7 +20,9 @@
                     <x-ui.button variant="secondary" :href="route('dashboard')">Dashboard</x-ui.button>
                 @else
                     <a href="{{ route('login') }}" class="rounded-xl px-4 py-2 text-sm font-medium text-slate-300 transition hover:text-white">Log in</a>
-                    <x-ui.button :href="route('register')">Get started</x-ui.button>
+                    @if (config('landlord.auth.registration_enabled'))
+                        <x-ui.button :href="route('register')">Get started</x-ui.button>
+                    @endif
                 @endauth
             </nav>
         </div>
@@ -41,8 +43,13 @@
                     Automated reminders, payment visibility, and tenant accountability—without spreadsheet chaos or generic property software.
                 </p>
                 <div class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                    <x-ui.button :href="route('register')" class="min-w-[200px] justify-center px-8 py-3">Start free</x-ui.button>
-                    <x-ui.button variant="secondary" :href="route('login')" class="min-w-[200px] justify-center px-8 py-3 border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08]">Sign in</x-ui.button>
+                    @if (config('landlord.auth.registration_enabled'))
+                        <x-ui.button :href="route('register')" class="min-w-[200px] justify-center px-8 py-3">Start free</x-ui.button>
+                        <x-ui.button variant="secondary" :href="route('login')" class="min-w-[200px] justify-center px-8 py-3 border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08]">Sign in</x-ui.button>
+                    @else
+                        <x-ui.button :href="route('login')" class="min-w-[200px] justify-center px-8 py-3">Sign in</x-ui.button>
+                        <p class="text-sm text-slate-500">Early access — landlord registration is not open yet.</p>
+                    @endif
                 </div>
             </div>
 

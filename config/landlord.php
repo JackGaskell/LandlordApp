@@ -55,6 +55,11 @@ return [
     */
     'auth' => [
         'require_email_verification' => (bool) env('REQUIRE_EMAIL_VERIFICATION', false),
+        /*
+        | Public landlord signup at /register. Keep false in production until launch.
+        | Tenant accounts remain invite-only via the portal welcome link.
+        */
+        'registration_enabled' => (bool) env('REGISTRATION_ENABLED', false),
     ],
 
     'portal' => [
