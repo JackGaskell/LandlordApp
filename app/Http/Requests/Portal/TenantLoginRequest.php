@@ -42,7 +42,7 @@ class TenantLoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => 'We could not sign you in. Check your email and password, or use your landlord invite link.',
+                'email' => 'We could not sign you in. Check your email and password, or open your invite link to get started.',
             ]);
         }
 
@@ -52,7 +52,7 @@ class TenantLoginRequest extends FormRequest
             Auth::guard('tenant')->logout();
 
             throw ValidationException::withMessages([
-                'email' => 'Your rent portal is not set up yet. Please use the invite link from your landlord.',
+                'email' => 'Your account is not set up yet. Use the invite link you were sent to create your password.',
             ]);
         }
 

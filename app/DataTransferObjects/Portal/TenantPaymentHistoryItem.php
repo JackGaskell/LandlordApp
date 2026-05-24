@@ -22,4 +22,9 @@ readonly class TenantPaymentHistoryItem
     {
         return '£'.number_format($this->amount, 2);
     }
+
+    public function portalStatusLabel(): string
+    {
+        return $this->status->portalLabel();
+    }
 }

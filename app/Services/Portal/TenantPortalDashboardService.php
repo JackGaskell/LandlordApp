@@ -24,8 +24,10 @@ class TenantPortalDashboardService
 
         $tenant->loadMissing(['paymentHistories', 'paymentProofs']);
 
+        $tenant->refresh();
+
         $currentPayment = $this->lifecycle->resolveFocusPayment($tenant);
-        $reliability = $this->reliability->profile($tenant);
+        $reliability = $this->reliability->profile($tenant, preferCache: false);
         $collection = $this->lifecycle->buildCollectionSummary($tenant, $currentPayment);
 
         return new TenantPortalSnapshot(

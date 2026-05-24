@@ -20,12 +20,12 @@ class InviteController extends Controller
         if (! $tenant->matchesInviteToken($token)) {
             return redirect()
                 ->route('portal.login')
-                ->with('status', 'This invite link is invalid or has expired. Ask your landlord for a new one.');
+                ->with('status', 'This invite link has expired or is not valid. Ask for a fresh link and try again.');
         }
 
         if ($tenant->hasPortalAccess()) {
             return redirect()->route('portal.login')
-                ->with('status', 'Your portal is already set up. Sign in with your email and password.');
+                ->with('status', 'You are already set up — sign in with your email and password.');
         }
 
         return view('portal.auth.invite', [
@@ -53,6 +53,6 @@ class InviteController extends Controller
 
         return redirect()
             ->route('portal.dashboard')
-            ->with('status', 'Welcome! Your rent portal is ready.');
+            ->with('status', 'You are in — welcome home.');
     }
 }

@@ -1,7 +1,7 @@
 <x-guest-portal-layout>
     <div class="ui-card-elevated border-gradient p-8">
         <h2 class="text-xl font-semibold text-white">Welcome back</h2>
-        <p class="mt-2 text-sm text-slate-400">Sign in to view your rent, streak, and payment history.</p>
+        <p class="mt-2 text-sm text-slate-400">Sign in to see your score, upcoming rent, and payment history.</p>
 
         @if (app()->environment('local'))
             <div class="mt-4 rounded-xl border border-brand-500/20 bg-brand-500/10 px-4 py-3 text-sm text-slate-300">

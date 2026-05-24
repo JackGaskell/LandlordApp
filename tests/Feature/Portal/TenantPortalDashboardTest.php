@@ -2,10 +2,12 @@
 
 namespace Tests\Feature\Portal;
 
+use App\Enums\PaymentOutcome;
 use App\Enums\PaymentStatus;
 use App\Enums\TenantCollectionStatus;
 use App\Models\PaymentHistory;
 use App\Models\Tenant;
+use App\Services\Payments\PaymentTrackingService;
 use App\Services\Portal\TenantPortalDashboardService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -29,10 +31,43 @@ class TenantPortalDashboardTest extends TestCase
         $this->actingAs($tenant, 'tenant')
             ->get(route('portal.dashboard'))
             ->assertOk()
-            ->assertSee('Collection status')
-            ->assertSee('Upcoming rent')
-            ->assertSee('On-time streak')
-            ->assertSee('Payment timeline');
+            ->assertSee('tenant score')
+            ->assertSee('reflects how consistently you pay rent')
+            ->assertSee('New')
+            ->assertSee('Not started yet')
+            ->assertSee('Your score hasn\'t started yet')
+            ->assertSee('Starting')
+            ->assertSee('0–39')
+            ->assertSee('40–59')
+            ->assertSee('Excellent')
+            ->assertSee('Pay on time to begin')
+            ->assertSee('Next payment')
+            ->assertSee('On time')
+            ->assertSee('Late')
+            ->assertSee('Month streak')
+            ->assertSee('Consistency')
+            ->assertSee('History')
+            ->assertSee('Confirm payment');
+    }
+
+    public function test_dashboard_shows_numeric_score_after_first_scored_payment(): void
+    {
+        $tenant = Tenant::factory()->create([
+            'password' => Hash::make('password'),
+            'portal_enabled_at' => now(),
+        ]);
+
+        PaymentHistory::factory()->paid()->for($tenant)->create([
+            'due_date' => now()->subMonth(),
+            'paid_at' => now()->subMonth()->addDay(),
+        ]);
+
+        $this->actingAs($tenant, 'tenant')
+            ->get(route('portal.dashboard'))
+            ->assertOk()
+            ->assertSee('out of 100')
+            ->assertSee('You\'re at the')
+            ->assertDontSee('Not started yet');
     }
 
     public function test_portal_snapshot_reflects_overdue_collection_state(): void
@@ -68,6 +103,34 @@ class TenantPortalDashboardTest extends TestCase
 
         $this->assertSame(TenantCollectionStatus::OnTrack, $snapshot->collection->status);
         $this->assertFalse($snapshot->upcomingRent->isOverdue);
+    }
+
+    public function test_overdue_period_lowers_reliability_score_on_dashboard_snapshot(): void
+    {
+        $tenant = Tenant::factory()->create(['portal_enabled_at' => now()]);
+        $tracking = app(PaymentTrackingService::class);
+
+        foreach ([4, 3, 2, 1] as $monthsAgo) {
+            $paid = PaymentHistory::factory()->paid()->for($tenant)->create([
+                'due_date' => now()->subMonths($monthsAgo)->day(15),
+                'paid_at' => now()->subMonths($monthsAgo)->day(16),
+            ]);
+            $tracking->sync($paid);
+        }
+
+        PaymentHistory::factory()->for($tenant)->create([
+            'due_date' => now()->subDays(2),
+            'paid_at' => null,
+            'status' => PaymentStatus::DueSoon,
+            'amount' => 950,
+        ]);
+
+        $snapshot = app(TenantPortalDashboardService::class)->snapshot($tenant);
+
+        $this->assertLessThan(100.0, $snapshot->reliability->score);
+        $this->assertGreaterThanOrEqual(1, $snapshot->reliability->missedCount);
+        $this->assertSame(0, $snapshot->reliability->currentStreak);
+        $this->assertSame(PaymentOutcome::Missed, $snapshot->reliability->timeline->first()->outcome);
     }
 
     public function test_payment_history_marks_current_period(): void

@@ -1,7 +1,7 @@
 <x-guest-portal-layout>
     <div class="ui-card-elevated border-gradient p-8">
-        <h2 class="text-xl font-semibold text-white">Reset your password</h2>
-        <p class="mt-2 text-sm text-slate-400">We will email you a link to choose a new password.</p>
+        <h2 class="text-xl font-semibold text-white">Forgot your password?</h2>
+        <p class="mt-2 text-sm text-slate-400">No worries — enter your email and we will send a link to reset it.</p>
 
         <x-auth-session-status class="mt-4" :status="session('status')" />
 

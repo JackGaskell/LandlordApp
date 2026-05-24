@@ -1,27 +1,47 @@
-@props(['paymentId', 'payment'])
+@props(['paymentId', 'payment', 'compact' => false])
 
-<form method="POST" action="{{ route('portal.payment-proofs.store') }}" enctype="multipart/form-data" class="space-y-5">
+<form
+    method="POST"
+    action="{{ route('portal.payment-proofs.store') }}"
+    enctype="multipart/form-data"
+    x-data="{
+        fileName: '',
+        showNote: @js((bool) old('note')),
+        handleFile(event) {
+            const file = event.target.files?.[0];
+            this.fileName = file ? file.name : '';
+        }
+    }"
+    class="space-y-4"
+>
     @csrf
     <input type="hidden" name="payment_id" value="{{ $paymentId }}">
+    <input type="hidden" name="mark_as_paid" value="1">
 
-    <div class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
-        <label class="flex cursor-pointer items-start gap-3">
+    <div>
+        <label for="proof" class="ui-file-drop py-5" :class="{ 'ui-file-drop-has-file': fileName }">
             <input
-                type="checkbox"
-                name="mark_as_paid"
-                value="1"
-                class="ui-checkbox mt-0.5"
-                checked
+                id="proof"
+                name="proof"
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png,.heic,.webp,image/*"
+                required
+                class="sr-only"
+                @change="handleFile($event)"
             />
-            <span>
-                <span class="text-sm font-medium text-white">I've paid this rent</span>
-                <span class="mt-0.5 block text-xs text-slate-500">Your landlord will confirm after reviewing your proof.</span>
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/15 text-brand-300">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                </svg>
             </span>
+            <span class="mt-2 block text-xs font-medium text-white" x-show="! fileName">Add receipt or screenshot</span>
+            <span class="mt-2 block text-xs font-medium text-emerald-300" x-show="fileName" x-text="fileName" x-cloak></span>
         </label>
+        <x-input-error :messages="$errors->get('proof')" class="mt-2" />
     </div>
 
     <div>
-        <label class="text-sm font-medium text-slate-300" for="claimed_paid_at">Date you paid</label>
+        <label for="claimed_paid_at" class="text-[10px] font-medium uppercase tracking-wider text-slate-500">Date paid</label>
         <input
             id="claimed_paid_at"
             name="claimed_paid_at"
@@ -33,37 +53,29 @@
         <x-input-error :messages="$errors->get('claimed_paid_at')" class="mt-2" />
     </div>
 
-    <div>
-        <label class="text-sm font-medium text-slate-300" for="proof">Payment proof</label>
-        <p class="mt-1 text-xs text-slate-500">Screenshot, bank receipt, or PDF (max {{ (int) config('landlord.payment_proofs.max_kb') }}KB)</p>
-        <input
-            id="proof"
-            name="proof"
-            type="file"
-            accept=".pdf,.jpg,.jpeg,.png,.heic,.webp,image/*"
-            required
-            class="mt-2 block w-full text-sm text-slate-400 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-500/20 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-200 hover:file:bg-brand-500/30"
-        />
-        <x-input-error :messages="$errors->get('proof')" class="mt-2" />
-    </div>
+    @unless ($compact)
+        <div>
+            <button
+                type="button"
+                class="text-xs font-medium text-slate-400 transition-colors hover:text-white"
+                @click="showNote = ! showNote"
+                x-text="showNote ? 'Hide note' : 'Add note'"
+            ></button>
+            <div x-show="showNote" x-transition x-cloak class="mt-2">
+                <input
+                    id="note"
+                    name="note"
+                    type="text"
+                    value="{{ old('note') }}"
+                    placeholder="Bank transfer reference"
+                    class="ui-input w-full"
+                />
+                <x-input-error :messages="$errors->get('note')" class="mt-2" />
+            </div>
+        </div>
+    @endunless
 
-    <div>
-        <label class="text-sm font-medium text-slate-300" for="note">Note for your landlord (optional)</label>
-        <textarea
-            id="note"
-            name="note"
-            rows="3"
-            class="ui-input mt-1.5 w-full"
-            placeholder="e.g. Bank transfer ref 48291 — paid Tuesday morning"
-        >{{ old('note') }}</textarea>
-        <x-input-error :messages="$errors->get('note')" class="mt-2" />
-    </div>
-
-    @if ($payment ?? false)
-        <p class="text-xs text-slate-500">
-            Submitting for <span class="text-slate-300">{{ $payment->due_date->format('F Y') }}</span> · {{ '£'.number_format($payment->amount, 2) }}
-        </p>
-    @endif
-
-    <x-ui.button type="submit" class="w-full justify-center">Submit for review</x-ui.button>
+    <x-ui.button type="submit" class="w-full justify-center">
+        Send for review
+    </x-ui.button>
 </form>

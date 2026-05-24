@@ -1,8 +1,8 @@
 <x-guest-portal-layout>
     <div class="ui-card-elevated border-gradient p-8">
-        <h2 class="text-xl font-semibold text-white">Set up your rent portal</h2>
+        <h2 class="text-xl font-semibold text-white">Create your account</h2>
         <p class="mt-2 text-sm text-slate-400">
-            Hi {{ $tenant->name }}, create a password to access your rent dashboard anytime.
+            Hi {{ $tenant->name }} — choose a password and you are ready to track rent and your score anytime.
         </p>
 
         <form method="POST" action="{{ request()->fullUrl() }}" class="mt-6 space-y-5">
@@ -21,7 +21,7 @@
             </div>
 
             <x-primary-button class="w-full justify-center">
-                Create my portal
+                Get started
             </x-primary-button>
         </form>
     </div>

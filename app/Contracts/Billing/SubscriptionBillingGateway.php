@@ -6,7 +6,7 @@ use App\DataTransferObjects\Billing\CheckoutSessionResult;
 use App\Models\User;
 
 /**
- * Landlord → LandlordApp SaaS billing (Stripe Checkout in subscription mode).
+ * Landlord → The Landlord App SaaS billing (Stripe Checkout in subscription mode).
  */
 interface SubscriptionBillingGateway
 {

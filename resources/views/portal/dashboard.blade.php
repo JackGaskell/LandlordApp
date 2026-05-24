@@ -1,34 +1,22 @@
-<x-tenant-portal-layout
-    :title="'Hi, '.$tenant->firstName()"
-    description="Your rent health at a glance — build your score, streak, and consistency."
->
-    <div class="space-y-6">
-        <x-portal.collection-status :collection="$snapshot->collection" />
+<x-tenant-portal-layout :title="'Hi, '.$tenant->firstName()">
+    <div class="mx-auto max-w-5xl space-y-5">
+        <p class="-mt-1 text-sm text-slate-500">
+            Your <span class="text-gradient font-medium">tenant score</span> reflects how consistently you pay rent.
+        </p>
 
-        <x-portal.payment-summary-cards :cards="$snapshot->summaryCards" />
+        <x-portal.score-experience :profile="$snapshot->reliability" />
 
-        <x-portal.upcoming-rent :upcoming="$snapshot->upcomingRent" />
+        <x-portal.score-stats-strip :profile="$snapshot->reliability" />
 
-        <x-portal.reliability-hero :profile="$snapshot->reliability" />
+        <x-portal.payment-action-card
+            :upcoming="$snapshot->upcomingRent"
+            :status="$snapshot->paymentStatus"
+            :profile="$snapshot->reliability"
+            :payment-id="$snapshot->collection->paymentId"
+            :payment="$snapshot->currentPayment"
+            :pay-online-coming-soon="$snapshot->payOnlineComingSoon"
+        />
 
-        <div class="grid gap-6 lg:grid-cols-2">
-            <x-portal.streak-counter :profile="$snapshot->reliability" />
-            <x-portal.consistency-meter :profile="$snapshot->reliability" />
-        </div>
-
-        <div class="grid gap-6 lg:grid-cols-2">
-            <x-portal.payment-status
-                :status="$snapshot->paymentStatus"
-                :payment-id="$snapshot->collection->paymentId"
-                :payment="$snapshot->currentPayment"
-                :pay-online-coming-soon="$snapshot->payOnlineComingSoon"
-            />
-            <x-portal.payment-timeline :timeline="$snapshot->reliability->timeline" />
-        </div>
-
-        <div class="grid gap-6 lg:grid-cols-2">
-            <x-portal.payment-history :items="$snapshot->paymentHistory" />
-            <x-portal.recent-activity :items="$snapshot->recentActivity" />
-        </div>
+        <x-portal.payment-history :items="$snapshot->paymentHistory" />
     </div>
 </x-tenant-portal-layout>

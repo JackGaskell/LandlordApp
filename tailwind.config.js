@@ -78,5 +78,10 @@ export default {
         },
     },
 
+    safelist: [
+        'bg-orange-500/10',
+        'text-orange-400',
+    ],
+
     plugins: [forms],
 };

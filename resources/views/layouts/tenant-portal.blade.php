@@ -8,9 +8,9 @@
 
         <title>
             @isset($title)
-                {{ $title }} · Rent portal
+                {{ $title }} · {{ config('app.name') }}
             @else
-                Rent portal · {{ config('app.name') }}
+                {{ config('app.name') }}
             @endisset
         </title>
 
@@ -21,12 +21,12 @@
     </head>
     <body class="h-full font-sans">
         <div class="ui-shell min-h-full" x-data="{ menuOpen: false }">
-            <header class="sticky top-0 z-40 border-b border-white/[0.06] bg-navy-950/90 backdrop-blur-md">
-                <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+            <header class="sticky top-0 z-40 border-b border-white/[0.04] bg-navy-950/95 backdrop-blur-md">
+                <div class="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
                     <div class="flex items-center gap-3">
                         <a href="{{ route('portal.dashboard') }}" class="text-sm font-semibold text-white">
                             {{ config('app.name') }}
-                            <span class="ml-1 rounded-md bg-brand-500/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-300">Tenant</span>
+                            <span class="ml-1 rounded-md bg-brand-500/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-300">Home</span>
                         </a>
                     </div>
 
@@ -63,12 +63,12 @@
                 </div>
             </header>
 
-            <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+            <main class="mx-auto max-w-5xl px-4 py-5 sm:px-6 sm:py-7">
                 @if ($title ?? false)
-                    <div class="mb-8">
-                        <h1 class="text-2xl font-semibold tracking-tight text-white sm:text-3xl">{{ $title }}</h1>
+                    <div class="mb-4 sm:mb-5">
+                        <h1 class="text-xl font-semibold tracking-tight text-white sm:text-2xl">{{ $title }}</h1>
                         @if ($description ?? false)
-                            <p class="mt-2 text-sm text-slate-400 sm:text-base">{{ $description }}</p>
+                            <p class="mt-0.5 text-sm text-slate-500">{{ $description }}</p>
                         @endif
                     </div>
                 @endif
