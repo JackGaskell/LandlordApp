@@ -310,9 +310,10 @@ readonly class TenantReliabilityProfile
     public function portalCompactStats(): array
     {
         return [
-            ['label' => 'Streak', 'value' => $this->currentStreak > 0 ? $this->currentStreak.' mo' : '—'],
-            ['label' => 'Consistency', 'value' => $this->consistencyFormatted().'%'],
             ['label' => 'On time', 'value' => (string) $this->totalOnTime],
+            ['label' => 'Late', 'value' => (string) $this->lateCount],
+            ['label' => 'Month streak', 'value' => (string) $this->currentStreak],
+            ['label' => 'Consistency', 'value' => $this->consistencyFormatted().'%'],
         ];
     }
 

@@ -4,9 +4,10 @@
             Maintain and grow your <span class="text-gradient font-medium">tenant score</span>
         </p>
 
-        <div class="grid gap-4 lg:grid-cols-5 lg:items-stretch lg:gap-5">
-            <div class="flex min-h-0 lg:col-span-3">
+        <div class="grid gap-4 lg:grid-cols-5 lg:items-start lg:gap-5">
+            <div class="flex min-h-0 flex-col gap-4 lg:col-span-3">
                 <x-portal.score-experience :profile="$snapshot->reliability" class="w-full" />
+                <x-portal.score-stats-strip :profile="$snapshot->reliability" />
             </div>
 
             <div class="flex min-h-0 lg:col-span-2">
@@ -20,8 +21,6 @@
                 />
             </div>
         </div>
-
-        <x-portal.score-stats-strip :profile="$snapshot->reliability" />
 
         <x-portal.payment-history :items="$snapshot->paymentHistory" />
     </div>

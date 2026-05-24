@@ -42,7 +42,9 @@ class TenantPortalDashboardTest extends TestCase
             ->assertSee('Excellent')
             ->assertSee('Pay on time to begin')
             ->assertSee('Next payment')
-            ->assertSee('Streak')
+            ->assertSee('On time')
+            ->assertSee('Late')
+            ->assertSee('Month streak')
             ->assertSee('Consistency')
             ->assertSee('History')
             ->assertSee('I\'ve paid — share proof');
