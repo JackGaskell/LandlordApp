@@ -8,6 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('rent_reminder_deliveries')) {
+            $this->addReminderDeliveryIndexes();
+
+            return;
+        }
+
         Schema::create('rent_reminder_deliveries', function (Blueprint $table) {
             $table->id();
             $table->foreignId('payment_history_id')->constrained()->cascadeOnDelete();
@@ -27,9 +33,36 @@ return new class extends Migration
                 'rent_reminder_deliveries_unique',
             );
 
-            $table->index(['landlord_user_id', 'dispatch_date', 'status']);
-            $table->index(['payment_history_id', 'reminder_type']);
+            $this->addReminderDeliveryIndexes($table);
         });
+    }
+
+    protected function addReminderDeliveryIndexes(?Blueprint $table = null): void
+    {
+        $addIndexes = function (Blueprint $blueprint): void {
+            // MySQL identifier limit is 64 chars; Laravel's auto-generated names exceed that.
+            if (! Schema::hasIndex('rent_reminder_deliveries', 'rrd_landlord_dispatch_status_idx')) {
+                $blueprint->index(
+                    ['landlord_user_id', 'dispatch_date', 'status'],
+                    'rrd_landlord_dispatch_status_idx',
+                );
+            }
+
+            if (! Schema::hasIndex('rent_reminder_deliveries', 'rrd_payment_reminder_idx')) {
+                $blueprint->index(
+                    ['payment_history_id', 'reminder_type'],
+                    'rrd_payment_reminder_idx',
+                );
+            }
+        };
+
+        if ($table !== null) {
+            $addIndexes($table);
+
+            return;
+        }
+
+        Schema::table('rent_reminder_deliveries', $addIndexes);
     }
 
     public function down(): void
