@@ -25,6 +25,12 @@
         <p class="text-xs text-slate-500">
             {{ $profile->portalProgressionSupportLine() }}
         </p>
+        @if ($milestoneNudge = $profile->portalMilestoneNudgeMessage())
+            <p class="text-xs text-brand-300/80">{{ $milestoneNudge }}</p>
+        @endif
+        @if ($scoreImpact = $profile->portalScoreImpactMessage())
+            <p class="mt-2 text-xs leading-relaxed text-slate-400">{{ $scoreImpact }}</p>
+        @endif
     </div>
 
     <div class="relative mt-5 w-full">

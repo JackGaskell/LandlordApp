@@ -31,7 +31,7 @@ readonly class TenantPaymentStatusSummary
     {
         return match ($this->portalPrimaryAction()) {
             'pay' => 'Pay now',
-            'upload' => 'I\'ve paid — share proof',
+            'upload' => 'Confirm payment',
             default => '',
         };
     }
@@ -64,10 +64,10 @@ readonly class TenantPaymentStatusSummary
     public function portalNextStep(): string
     {
         return match ($this->status) {
-            PaymentStatus::Paid => 'You are all set for this month. Nice work staying on track.',
-            PaymentStatus::DueSoon => 'Paying on or before the due date keeps your score and streak moving in the right direction.',
-            PaymentStatus::Overdue => 'If you have already paid, sharing proof helps keep your record accurate. Your score may be affected until payment is confirmed.',
-            PaymentStatus::PartiallyPaid => 'When the rest is paid, upload proof or complete the amount — we will update your record from there.',
+            PaymentStatus::Paid => 'You are all set for this month.',
+            PaymentStatus::DueSoon => 'Paying on or before the due date keeps your score and streak on track.',
+            PaymentStatus::Overdue => 'If you have already paid, confirming payment keeps your record accurate.',
+            PaymentStatus::PartiallyPaid => 'When the rest is paid, confirm payment so your record stays up to date.',
         };
     }
 
@@ -78,6 +78,6 @@ readonly class TenantPaymentStatusSummary
 
     public function portalUploadToggleShow(): string
     {
-        return 'Already paid? Share proof';
+        return 'Share payment proof';
     }
 }

@@ -2,11 +2,14 @@
 
 namespace Tests\Unit\Reliability;
 
+use App\DataTransferObjects\Reliability\TenantReliabilityProfile;
+use App\Enums\ReliabilityBadge;
 use App\Enums\TenantScoreTier;
 use App\Models\PaymentHistory;
 use App\Models\Tenant;
 use App\Services\Portal\TenantPortalDashboardService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class TenantScoreTierTest extends TestCase
@@ -63,5 +66,71 @@ class TenantScoreTierTest extends TestCase
         $this->assertNotEmpty($profile->portalMaintainActions());
         $this->assertCount(4, $profile->portalAchievements());
         $this->assertCount(3, $profile->portalScoreStats());
+    }
+
+    public function test_portal_behavioural_messages_for_established_tenant(): void
+    {
+        $tenant = Tenant::factory()->create(['portal_enabled_at' => now()]);
+
+        foreach ([4, 3, 2, 1] as $monthsAgo) {
+            PaymentHistory::factory()->paid()->for($tenant)->create([
+                'due_date' => now()->subMonths($monthsAgo)->day(15),
+                'paid_at' => now()->subMonths($monthsAgo)->day(16),
+            ]);
+        }
+
+        PaymentHistory::factory()->dueSoon()->for($tenant)->create([
+            'due_date' => now()->addDays(5),
+        ]);
+
+        $profile = app(TenantPortalDashboardService::class)->snapshot($tenant)->reliability;
+
+        $this->assertSame('Your next on-time payment keeps your streak alive.', $profile->portalScoreImpactMessage());
+        $this->assertSame('Your next on-time payment keeps this streak alive.', $profile->portalStreakProtectionMessage());
+        $this->assertStringContainsString('On-time payment:', $profile->portalProjectedScoreOnTimeLabel());
+        $this->assertStringContainsString('rental record', $profile->portalProjectedScoreLateLabel());
+    }
+
+    public function test_portal_milestone_nudge_when_close_to_next_tier(): void
+    {
+        $profile = $this->makeProfile(score: 55, trackedPeriods: 4, currentStreak: 2);
+
+        $this->assertTrue($profile->portalIsNearNextTier());
+        $this->assertSame('One more on-time payment helps you reach Reliable.', $profile->portalMilestoneNudgeMessage());
+    }
+
+    public function test_portal_maintain_message_at_top_tier_without_streak(): void
+    {
+        $profile = $this->makeProfile(score: 100, trackedPeriods: 8, currentStreak: 0);
+
+        $this->assertSame(
+            'Paying on time protects your Excellent status.',
+            $profile->portalScoreImpactMessage(),
+        );
+        $this->assertSame(
+            'Paying before the due date protects your Excellent status.',
+            $profile->portalPaymentProtectionMessage(),
+        );
+        $this->assertSame('On-time payment: score stays at 100', $profile->portalProjectedScoreOnTimeLabel());
+    }
+
+    protected function makeProfile(float $score, int $trackedPeriods, int $currentStreak): TenantReliabilityProfile
+    {
+        return new TenantReliabilityProfile(
+            tenantId: 1,
+            tenantName: 'Jamie Taylor',
+            score: $score,
+            badge: ReliabilityBadge::forScore($score, $trackedPeriods),
+            currentStreak: $currentStreak,
+            bestStreak: max($currentStreak, 1),
+            totalOnTime: $trackedPeriods,
+            lateCount: 0,
+            missedCount: 0,
+            partialCount: 0,
+            trackedPeriods: $trackedPeriods,
+            consistencyRate: 100,
+            consistencyWindowMonths: 12,
+            timeline: collect(),
+        );
     }
 }

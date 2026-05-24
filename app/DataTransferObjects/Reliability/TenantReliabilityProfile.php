@@ -288,13 +288,26 @@ readonly class TenantReliabilityProfile
         $points = $this->portalPointsToNextTier();
 
         return $points > 0
-            ? "{$points} points to reach {$next->scaleLabel()}"
+            ? "{$points} points to {$next->scaleLabel()}"
             : "Almost at {$next->scaleLabel()}";
     }
 
     public function portalProgressionSupportLine(): string
     {
-        return 'Pay rent on time to move up.';
+        return $this->portalRentalRecordMessage();
+    }
+
+    public function portalRentalRecordMessage(): string
+    {
+        if ($this->trackedPeriods === 0) {
+            return 'Strong payment consistency builds trust over time.';
+        }
+
+        return match ($this->scoreTier()) {
+            TenantScoreTier::Excellent => 'Excellent tenants maintain reliable payment habits.',
+            TenantScoreTier::Trusted, TenantScoreTier::Reliable => 'Your rental record reflects consistent on-time payments.',
+            default => 'Strong payment consistency builds trust over time.',
+        };
     }
 
     public function portalHasPositiveRecentOutcome(): bool
@@ -304,8 +317,166 @@ readonly class TenantReliabilityProfile
         return $latest !== null && $latest->outcome === PaymentOutcome::OnTime;
     }
 
+    public function portalScoreImpactMessage(): ?string
+    {
+        if ($this->trackedPeriods === 0) {
+            return 'Your first on-time payment begins your tenant score.';
+        }
+
+        if ($this->currentStreak > 0) {
+            return 'Your next on-time payment keeps your streak alive.';
+        }
+
+        if ($this->portalNextTier() === null) {
+            return 'Paying on time protects your '.$this->scoreTier()->scaleLabel().' status.';
+        }
+
+        return 'Consistent payments strengthen your tenant record.';
+    }
+
+    public function portalPaymentProtectionMessage(): ?string
+    {
+        if ($this->trackedPeriods === 0) {
+            return null;
+        }
+
+        if ($this->portalNextTier() === null) {
+            return 'Paying before the due date protects your '.$this->scoreTier()->scaleLabel().' status.';
+        }
+
+        if ($this->currentStreak > 0) {
+            return 'Your next payment keeps your streak alive.';
+        }
+
+        return 'Paying on time helps protect your tenant score.';
+    }
+
+    public function portalProjectedScoreIfOnTime(): float
+    {
+        return $this->projectedScoreWithOutcome(onTimeDelta: 1, lateDelta: 0, missedDelta: 0, partialDelta: 0);
+    }
+
+    public function portalProjectedScoreIfLate(): float
+    {
+        return $this->projectedScoreWithOutcome(onTimeDelta: 0, lateDelta: 1, missedDelta: 0, partialDelta: 0);
+    }
+
+    public function portalProjectedScoreOnTimeLabel(): string
+    {
+        if ($this->trackedPeriods === 0) {
+            return 'On-time payment: begins your score';
+        }
+
+        $projected = (int) round($this->portalProjectedScoreIfOnTime());
+        $current = (int) round($this->score);
+
+        if ($projected >= $current) {
+            return 'On-time payment: score stays at '.number_format($projected, 0);
+        }
+
+        return 'On-time payment: helps strengthen your score';
+    }
+
+    public function portalProjectedScoreLateLabel(): string
+    {
+        return 'Late payment may affect your score and rental record';
+    }
+
+    public function portalPaymentRecordedMessage(): ?string
+    {
+        if ($this->trackedPeriods === 0) {
+            return 'Payment recorded — your score begins with consistency.';
+        }
+
+        if ($this->currentStreak >= 2) {
+            return 'Another on-time payment recorded. Your streak continues.';
+        }
+
+        if ($this->consistencyRate >= 80 && $this->scoreTier() === TenantScoreTier::Excellent) {
+            return 'Excellent consistency maintained.';
+        }
+
+        if ($this->portalHasPositiveRecentOutcome()) {
+            return 'Another on-time payment recorded.';
+        }
+
+        return 'Payment recorded — thank you for staying on track.';
+    }
+
+    public function portalStreakProtectionMessage(): ?string
+    {
+        if ($this->currentStreak <= 0) {
+            return null;
+        }
+
+        return 'Your next on-time payment keeps this streak alive.';
+    }
+
+    public function portalIsNearNextTier(): bool
+    {
+        $points = $this->portalPointsToNextTier();
+
+        return $points !== null && $points > 0 && $points <= 15;
+    }
+
+    public function portalMilestoneNudgeMessage(): ?string
+    {
+        if (! $this->portalIsNearNextTier()) {
+            return null;
+        }
+
+        $next = $this->portalNextTier();
+
+        if ($next === null) {
+            return null;
+        }
+
+        return 'One more on-time payment helps you reach '.$next->scaleLabel().'.';
+    }
+
+    public function portalPrimaryActionSubtext(): string
+    {
+        if ($this->currentStreak > 0) {
+            return 'Confirms your payment and protects your streak.';
+        }
+
+        if ($this->portalNextTier() === null) {
+            return 'Keeps your record and '.$this->scoreTier()->scaleLabel().' status accurate.';
+        }
+
+        return 'Keeps your rental record and score accurate.';
+    }
+
+    protected function projectedScoreWithOutcome(int $onTimeDelta, int $lateDelta, int $missedDelta, int $partialDelta): float
+    {
+        $weights = config('landlord.reliability');
+
+        $onTime = $this->totalOnTime + $onTimeDelta;
+        $late = $this->lateCount + $lateDelta;
+        $missed = $this->missedCount + $missedDelta;
+        $partial = $this->partialCount + $partialDelta;
+        $tracked = $this->trackedPeriods + 1;
+
+        if ($tracked === 0) {
+            return 100.0;
+        }
+
+        $weightedSum = ($onTime * $weights['on_time_weight'])
+            + ($late * $weights['late_weight'])
+            + ($missed * $weights['missed_weight'])
+            + ($partial * ($weights['partial_weight'] ?? $weights['late_weight']));
+
+        $maxPossible = $tracked * $weights['on_time_weight'];
+
+        if ($maxPossible <= 0) {
+            return 100.0;
+        }
+
+        return round(max(0, min(100, ($weightedSum / $maxPossible) * 100)), 1);
+    }
+
     /**
-     * @return list<array{label: string, value: string, icon: string, tone: string}>
+     * @return list<array{label: string, value: string, icon: string, tone: string, hint?: string}>
      */
     public function portalCompactStats(): array
     {
@@ -327,12 +498,16 @@ readonly class TenantReliabilityProfile
                 'value' => (string) $this->currentStreak,
                 'icon' => 'flame',
                 'tone' => $this->currentStreak > 0 ? 'streak' : 'default',
+                'hint' => $this->portalStreakProtectionMessage(),
             ],
             [
                 'label' => 'Consistency',
                 'value' => $this->consistencyFormatted().'%',
                 'icon' => 'chart',
                 'tone' => 'brand',
+                'hint' => $this->trackedPeriods > 0 && $this->consistencyRate >= 80
+                    ? 'Strong payment consistency builds trust over time.'
+                    : null,
             ],
         ];
     }

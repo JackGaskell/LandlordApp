@@ -4,7 +4,7 @@
     $scoreProgress = $profile->portalScoreProgressPercent();
     $scoreDisplay = $profile->portalScoreDisplay();
     $scoreSubtitle = $profile->portalScoreSubtitle();
-    $scoreLabelSize = $profile->portalScoreIsEstablished() ? 24 : 16;
+    $scoreLabelSize = $profile->portalScoreIsEstablished() ? 20 : 14;
 @endphp
 
 <section {{ $attributes->merge(['class' => 'relative rounded-2xl bg-navy-900/90 ring-1 ring-white/[0.06]']) }}>
@@ -51,7 +51,7 @@
                     @endif
                     <text
                         x="60"
-                        y="37"
+                        y="36"
                         text-anchor="middle"
                         fill="#ffffff"
                         font-family="Inter, ui-sans-serif, system-ui, sans-serif"
@@ -64,7 +64,7 @@
                         text-anchor="middle"
                         fill="#64748b"
                         font-family="Inter, ui-sans-serif, system-ui, sans-serif"
-                        font-size="9"
+                        font-size="8"
                     >{{ $scoreSubtitle }}</text>
                 </svg>
             </div>

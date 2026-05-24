@@ -1,6 +1,7 @@
 @props([
     'upcoming',
     'status',
+    'profile' => null,
     'paymentId' => null,
     'payment' => null,
     'payOnlineComingSoon' => true,
@@ -39,13 +40,26 @@
                     Recorded
                 @endif
             </p>
+            @if ($profile && ($recordedMessage = $profile->portalPaymentRecordedMessage()))
+                <p class="mt-1 text-xs leading-relaxed text-emerald-300/80">{{ $recordedMessage }}</p>
+            @endif
         @else
             <p @class([
                 'mt-2 text-sm font-medium',
-                'text-amber-300' => $upcoming->isOverdue,
+                'text-amber-300/90' => $upcoming->isOverdue,
                 'text-slate-300' => ! $upcoming->isOverdue,
             ])>{{ $upcoming->dueLabel }}</p>
             <p class="text-xs text-slate-500">{{ $upcoming->portalDueDateLong() }}</p>
+
+            @if ($profile)
+                <div class="mt-3 space-y-1 border-t border-white/[0.06] pt-3">
+                    @if ($protectionMessage = $profile->portalPaymentProtectionMessage())
+                        <p class="text-xs text-slate-400">{{ $protectionMessage }}</p>
+                    @endif
+                    <p class="text-xs text-slate-400">{{ $profile->portalProjectedScoreOnTimeLabel() }}</p>
+                    <p class="text-xs text-slate-500">{{ $profile->portalProjectedScoreLateLabel() }}</p>
+                </div>
+            @endif
         @endif
 
         @if ($status->portalIsActionable())
@@ -71,6 +85,9 @@
                     >
                         {{ $status->portalPrimaryActionLabel() }}
                     </x-ui.button>
+                    @if ($profile)
+                        <p class="mt-2 text-center text-xs text-slate-500">{{ $profile->portalPrimaryActionSubtext() }}</p>
+                    @endif
                 @endif
 
                 @if ($status->canUploadProof)

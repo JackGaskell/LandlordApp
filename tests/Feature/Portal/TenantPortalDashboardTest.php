@@ -31,8 +31,8 @@ class TenantPortalDashboardTest extends TestCase
         $this->actingAs($tenant, 'tenant')
             ->get(route('portal.dashboard'))
             ->assertOk()
-            ->assertSee('Maintain and grow your')
             ->assertSee('tenant score')
+            ->assertSee('reflects how consistently you pay rent')
             ->assertSee('New')
             ->assertSee('Not started yet')
             ->assertSee('Your score hasn\'t started yet')
@@ -47,7 +47,7 @@ class TenantPortalDashboardTest extends TestCase
             ->assertSee('Month streak')
             ->assertSee('Consistency')
             ->assertSee('History')
-            ->assertSee('I\'ve paid — share proof');
+            ->assertSee('Confirm payment');
     }
 
     public function test_dashboard_shows_numeric_score_after_first_scored_payment(): void

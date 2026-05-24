@@ -250,14 +250,8 @@ class TenantPaymentLifecycleService
         int $daysOverdue,
         bool $isOverdue,
     ): string {
-        if ($isOverdue && $daysOverdue > 0) {
-            return $daysOverdue === 1
-                ? '1 day past due date'
-                : "{$daysOverdue} days past due date";
-        }
-
         if ($isOverdue) {
-            return 'Past due date';
+            return 'Due date passed — confirm when paid';
         }
 
         if ($dueDate->isToday()) {
@@ -268,8 +262,16 @@ class TenantPaymentLifecycleService
             return 'Due tomorrow';
         }
 
-        if ($daysUntil > 1 && $daysUntil <= 14) {
-            return "Due in {$daysUntil} days";
+        if ($daysUntil >= 2 && $daysUntil <= 7) {
+            return 'Due '.$dueDate->format('l');
+        }
+
+        if ($daysUntil >= 8 && $daysUntil <= 21) {
+            return $daysUntil.' '.str('day')->plural($daysUntil).' remaining';
+        }
+
+        if ($daysUntil > 21) {
+            return 'Payment due soon';
         }
 
         return 'Due '.$dueDate->format('j M Y');
@@ -292,7 +294,7 @@ class TenantPaymentLifecycleService
                 ? 'Recorded on '.$payment->paid_at->format('j M Y').' — thanks for staying consistent.'
                 : 'This month is marked as paid.',
             PaymentStatus::DueSoon => 'Your rent is coming up. Paying on or before the due date keeps your score and streak healthy.',
-            PaymentStatus::Overdue => 'If you have already paid, share proof below so your record can be updated. Your score may be affected until payment is confirmed.',
+            PaymentStatus::Overdue => 'If you have already paid, confirm payment below so your record can be updated.',
             PaymentStatus::PartiallyPaid => 'Part of this month is on record. Share proof or finish the rest when you are ready.',
         };
     }

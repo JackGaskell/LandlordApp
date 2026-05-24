@@ -11,6 +11,9 @@
                 <div class="min-w-0">
                     <p class="text-[10px] font-medium uppercase tracking-wider text-slate-500">{{ $stat['label'] }}</p>
                     <p class="mt-1.5 text-xl font-bold tabular-nums text-white sm:text-2xl">{{ $stat['value'] }}</p>
+                    @if (! empty($stat['hint']))
+                        <p class="mt-1.5 text-[10px] leading-snug text-slate-500">{{ $stat['hint'] }}</p>
+                    @endif
                 </div>
                 <div @class([
                     'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
