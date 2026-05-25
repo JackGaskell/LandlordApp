@@ -7,6 +7,7 @@ use App\Enums\PaymentStatus;
 use App\Enums\TenantCollectionStatus;
 use App\Models\PaymentHistory;
 use App\Models\Tenant;
+use App\Models\User;
 use App\Services\Payments\PaymentTrackingService;
 use App\Services\Portal\TenantPortalDashboardService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,9 +20,21 @@ class TenantPortalDashboardTest extends TestCase
 
     public function test_dashboard_renders_for_authenticated_tenant(): void
     {
-        $tenant = Tenant::factory()->create([
+        $landlord = User::factory()->create([
+            'stripe_connect_account_id' => 'acct_test',
+            'stripe_connect_charges_enabled' => true,
+        ]);
+
+        $tenant = Tenant::factory()->for($landlord)->create([
             'password' => Hash::make('password'),
             'portal_enabled_at' => now(),
+        ]);
+
+        config([
+            'landlord.stripe.enabled' => true,
+            'landlord.stripe.connect.enabled' => true,
+            'landlord.portal.pay_online_coming_soon' => false,
+            'services.stripe.secret' => 'sk_test_fake',
         ]);
 
         PaymentHistory::factory()->dueSoon()->for($tenant)->create([
