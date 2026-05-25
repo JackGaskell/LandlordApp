@@ -2,6 +2,7 @@
 
 namespace App\Services\Tenants;
 
+use App\DataTransferObjects\Reliability\TenantReliabilityProfile;
 use App\DataTransferObjects\Tenants\TenantReliabilityScore;
 use App\Models\Tenant;
 use App\Models\User;
@@ -17,9 +18,14 @@ class TenantReliabilityService
         protected TenantReliabilityProfileService $profiles,
     ) {}
 
+    public function profile(Tenant $tenant): TenantReliabilityProfile
+    {
+        return $this->profiles->profile($tenant);
+    }
+
     public function score(Tenant $tenant): TenantReliabilityScore
     {
-        return $this->profiles->profile($tenant)->toLegacyScore();
+        return $this->profile($tenant)->toLegacyScore();
     }
 
     /**

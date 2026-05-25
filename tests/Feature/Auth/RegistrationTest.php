@@ -10,6 +10,31 @@ class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config(['landlord.auth.registration_enabled' => true]);
+    }
+
+    public function test_registration_is_unavailable_when_disabled(): void
+    {
+        config(['landlord.auth.registration_enabled' => false]);
+
+        $this->get('/register')->assertNotFound();
+
+        $this->post('/register', [
+            'first_name' => 'Test',
+            'last_name' => 'User',
+            'email' => 'blocked@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ])->assertNotFound();
+
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => 'blocked@example.com']);
+    }
+
     public function test_registration_screen_can_be_rendered(): void
     {
         $response = $this->get('/register');

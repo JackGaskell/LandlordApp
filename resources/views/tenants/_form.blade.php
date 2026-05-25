@@ -10,6 +10,12 @@
     </div>
 
     <div>
+        <x-input-label for="property_label" value="Property label (optional)" />
+        <x-text-input id="property_label" name="property_label" class="mt-1.5 block w-full" :value="old('property_label', $tenant->property_label ?? '')" placeholder="e.g. 12 High Street" />
+        <x-input-error :messages="$errors->get('property_label')" class="mt-2" />
+    </div>
+
+    <div>
         <x-input-label for="email" value="Email" />
         <x-text-input id="email" name="email" type="email" class="mt-1.5 block w-full" :value="old('email', $tenant->email ?? '')" required />
         <x-input-error :messages="$errors->get('email')" class="mt-2" />

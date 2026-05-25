@@ -6,6 +6,7 @@ use App\Enums\PaymentMethod;
 use App\Enums\PaymentRecordedVia;
 use App\Enums\PaymentStatus;
 use App\Services\Payments\PaymentTrackingService;
+use App\Services\Rent\RentPeriodAutomationService;
 use App\Enums\PaymentVerificationStatus;
 use App\Mail\Transactional\PaymentReceivedMail;
 use App\Models\PaymentHistory;
@@ -19,6 +20,7 @@ class MarkPaymentPaidAction
 {
     public function __construct(
         protected PaymentTrackingService $paymentTracking,
+        protected RentPeriodAutomationService $rentPeriods,
     ) {}
 
     public function execute(
@@ -46,6 +48,8 @@ class MarkPaymentPaidAction
                         ->onQueue(config('landlord.queues.mail')),
                 );
             }
+
+            $this->rentPeriods->advanceAfterPeriodSettled($payment);
 
             return $payment;
         });

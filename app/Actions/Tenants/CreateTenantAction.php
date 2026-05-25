@@ -2,38 +2,39 @@
 
 namespace App\Actions\Tenants;
 
-use App\Actions\Payments\RecordPaymentAction;
-use App\Enums\PaymentVerificationStatus;
 use App\Models\Tenant;
 use App\Models\User;
-use App\Services\Rent\RentScheduleService;
+use App\Services\Rent\RentPeriodAutomationService;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Creates a tenant and opens their first rent period for the current schedule.
+ * Creates a tenant; rent periods and reminders are handled automatically from there.
  */
 class CreateTenantAction
 {
     public function __construct(
-        protected RentScheduleService $rentSchedule,
-        protected RecordPaymentAction $recordPayment,
+        protected SetupTenantAction $setupTenant,
+        protected RentPeriodAutomationService $rentPeriods,
     ) {}
 
-    public function execute(User $landlord, array $data): Tenant
+    /**
+     * @return array{tenant: Tenant, portal_invite_url: string|null}
+     */
+    public function execute(User $landlord, array $data): array
     {
         return DB::transaction(function () use ($landlord, $data) {
-            $tenant = $landlord->tenants()->create($data);
+            $prepared = $this->setupTenant->prepare($landlord, $data);
 
-            $dueDate = $this->rentSchedule->nextDueDate($tenant);
+            $tenant = $landlord->tenants()->create($prepared['tenant_data']);
 
-            $this->recordPayment->execute($tenant, [
-                'amount' => $this->rentSchedule->scheduledAmount($tenant),
-                'due_date' => $dueDate->toDateString(),
-                'paid_at' => null,
-                'verification_status' => PaymentVerificationStatus::Unverified->value,
-            ]);
+            $this->rentPeriods->maintainTenantSchedule($tenant);
 
-            return $tenant->fresh(['paymentHistories']);
+            $inviteUrl = $this->setupTenant->maybeEnablePortal($tenant);
+
+            return [
+                'tenant' => $tenant->fresh(['paymentHistories']),
+                'portal_invite_url' => $inviteUrl,
+            ];
         });
     }
 }

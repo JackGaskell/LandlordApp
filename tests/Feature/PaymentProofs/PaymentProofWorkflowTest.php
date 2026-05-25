@@ -84,6 +84,33 @@ class PaymentProofWorkflowTest extends TestCase
         $this->assertSame(PaymentStatus::Paid, $payment->status);
     }
 
+    public function test_approving_proof_opens_next_rent_period(): void
+    {
+        Storage::fake('local');
+
+        $landlord = User::factory()->create();
+        $tenant = Tenant::factory()->for($landlord)->create(['rent_due_day' => 10]);
+
+        $payment = PaymentHistory::factory()->dueSoon()->for($tenant)->create([
+            'due_date' => now()->subMonth()->day(10),
+            'amount' => $tenant->rent_amount,
+            'verification_status' => PaymentVerificationStatus::Pending,
+            'paid_at' => now(),
+        ]);
+
+        $proof = PaymentProof::factory()->for($tenant)->for($payment)->create([
+            'status' => PaymentProofStatus::Pending,
+            'tenant_marked_paid' => true,
+            'claimed_paid_at' => now(),
+        ]);
+
+        $this->actingAs($landlord)
+            ->post(route('payment-proofs.approve', $proof))
+            ->assertRedirect(route('payment-proofs.show', $proof));
+
+        $this->assertDatabaseCount('payment_histories', 2);
+    }
+
     public function test_landlord_can_reject_proof_and_reset_unverified_payment(): void
     {
         $landlord = User::factory()->create();

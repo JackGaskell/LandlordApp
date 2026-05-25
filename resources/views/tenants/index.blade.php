@@ -1,6 +1,6 @@
 <x-app-layout
     title="Tenants"
-    description="Manage who rents from you and track their rent behaviour."
+    description="Who pays rent — periods and reminders run automatically."
 >
     <x-slot name="actions">
         <x-ui.button :href="route('tenants.create')">Add tenant</x-ui.button>
@@ -27,7 +27,12 @@
                                 <a href="{{ route('tenants.show', $tenant) }}" class="font-medium ui-link">
                                     {{ $tenant->name }}
                                 </a>
-                                <p class="text-xs text-slate-500">{{ $tenant->email }}</p>
+                                <p class="text-xs text-slate-500">
+                                    @if ($tenant->property_label)
+                                        {{ $tenant->property_label }} ·
+                                    @endif
+                                    {{ $tenant->email }}
+                                </p>
                             </td>
                             <td class="ui-table-cell font-semibold text-white">£{{ number_format($tenant->rent_amount, 2) }}</td>
                             <td class="ui-table-cell">{{ $tenant->rent_due_day }}</td>

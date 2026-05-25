@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\Tenant;
 
-use App\Enums\TenantStatus;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreTenantRequest extends FormRequest
 {
@@ -20,11 +18,11 @@ class StoreTenantRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'property_label' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'phone_number' => ['nullable', 'string', 'max:30'],
             'rent_amount' => ['required', 'numeric', 'min:0', 'max:999999.99'],
             'rent_due_day' => ['required', 'integer', 'min:1', 'max:28'],
-            'status' => ['required', Rule::enum(TenantStatus::class)],
             'notes' => ['nullable', 'string', 'max:5000'],
         ];
     }

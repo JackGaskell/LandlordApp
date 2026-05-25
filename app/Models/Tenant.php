@@ -25,6 +25,7 @@ class Tenant extends Model implements AuthenticatableContract, CanResetPasswordC
     protected $fillable = [
         'user_id',
         'name',
+        'property_label',
         'email',
         'password',
         'phone_number',

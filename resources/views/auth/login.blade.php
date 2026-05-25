@@ -40,7 +40,7 @@
             </x-primary-button>
         </form>
 
-        @if (Route::has('register'))
+        @if (Route::has('register') && config('landlord.auth.registration_enabled'))
             <p class="mt-8 text-center text-sm text-slate-400">
                 New to {{ config('app.name') }}?
                 <a href="{{ route('register') }}" class="font-semibold ui-link">Create an account</a>

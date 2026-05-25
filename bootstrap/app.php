@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
+            'landlord.registration' => \App\Http\Middleware\EnsureLandlordRegistrationEnabled::class,
             'tenant.portal' => \App\Http\Middleware\EnsureTenantPortalAccess::class,
             'tenant.guest' => \App\Http\Middleware\RedirectIfTenantAuthenticated::class,
         ]);
