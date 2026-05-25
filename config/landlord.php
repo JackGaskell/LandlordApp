@@ -132,11 +132,6 @@ return [
         'currency' => env('STRIPE_CURRENCY', 'gbp'),
         'subscription_price_id' => env('STRIPE_SUBSCRIPTION_PRICE_ID'),
         'webhook_tolerance' => (int) env('STRIPE_WEBHOOK_TOLERANCE', 300),
-        'connect' => [
-            'enabled' => (bool) env('STRIPE_CONNECT_ENABLED', true),
-            'required' => (bool) env('STRIPE_CONNECT_REQUIRED', true),
-            'country' => env('STRIPE_CONNECT_COUNTRY', 'GB'),
-        ],
         'checkout_urls' => [
             'subscription_success' => env('STRIPE_SUBSCRIPTION_SUCCESS_URL', '/dashboard?billing=success'),
             'subscription_cancel' => env('STRIPE_SUBSCRIPTION_CANCEL_URL', '/dashboard?billing=cancel'),

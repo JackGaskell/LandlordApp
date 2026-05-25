@@ -25,9 +25,6 @@ class User extends Authenticatable
         'stripe_customer_id',
         'stripe_subscription_id',
         'subscription_status',
-        'stripe_connect_account_id',
-        'stripe_connect_charges_enabled',
-        'stripe_connect_details_submitted',
     ];
 
     protected $hidden = [
@@ -41,15 +38,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'subscription_status' => SubscriptionStatus::class,
-            'stripe_connect_charges_enabled' => 'boolean',
-            'stripe_connect_details_submitted' => 'boolean',
         ];
-    }
-
-    public function canAcceptStripeRentPayments(): bool
-    {
-        return filled($this->stripe_connect_account_id)
-            && $this->stripe_connect_charges_enabled;
     }
 
     /**

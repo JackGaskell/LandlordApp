@@ -38,15 +38,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::put('settings/{setting}', [LandlordSettingController::class, 'update'])
         ->name('settings.update');
-
-    Route::get('settings/payments', [\App\Http\Controllers\LandlordStripeConnectController::class, 'edit'])
-        ->name('settings.payments');
-    Route::post('settings/stripe/connect', [\App\Http\Controllers\LandlordStripeConnectController::class, 'connect'])
-        ->name('settings.stripe.connect');
-    Route::get('settings/stripe/return', [\App\Http\Controllers\LandlordStripeConnectController::class, 'return'])
-        ->name('settings.stripe.return');
-    Route::get('settings/stripe/refresh', [\App\Http\Controllers\LandlordStripeConnectController::class, 'refresh'])
-        ->name('settings.stripe.refresh');
 });
 
 Route::middleware('auth')->group(function () {

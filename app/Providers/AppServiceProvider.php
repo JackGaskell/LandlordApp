@@ -121,7 +121,6 @@ class AppServiceProvider extends ServiceProvider
             SubscriptionCheckoutCompletedHandler::class,
             RentCheckoutCompletedHandler::class,
             SubscriptionLifecycleHandler::class,
-            \App\Services\Webhooks\Handlers\StripeConnectAccountUpdatedHandler::class,
         ], 'stripe.webhook.handlers');
 
         $this->app->singleton(StripeWebhookDispatcher::class, function ($app) {

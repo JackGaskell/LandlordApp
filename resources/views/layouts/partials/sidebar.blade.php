@@ -20,15 +20,9 @@
             'badge' => $pendingProofCount ?? 0,
         ],
         [
-            'label' => 'Get paid',
-            'route' => 'settings.payments',
-            'active' => request()->routeIs('settings.payments', 'settings.stripe.*'),
-            'icon' => 'card',
-        ],
-        [
             'label' => 'Reminders',
             'route' => 'settings.edit',
-            'active' => request()->routeIs('settings.edit', 'settings.update'),
+            'active' => request()->routeIs('settings.*'),
             'icon' => 'bell',
         ],
     ];

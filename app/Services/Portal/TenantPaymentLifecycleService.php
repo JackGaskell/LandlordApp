@@ -11,7 +11,6 @@ use App\Enums\PaymentStatus;
 use App\Enums\TenantCollectionStatus;
 use App\Models\PaymentHistory;
 use App\Models\Tenant;
-use App\Services\Payments\StripeConnectService;
 use App\Services\Payments\PaymentTrackingService;
 use App\Services\Reliability\LatePaymentDetector;
 use App\Services\Rent\RentScheduleService;
@@ -27,7 +26,6 @@ class TenantPaymentLifecycleService
         protected PaymentTrackingService $paymentTracking,
         protected LatePaymentDetector $latePayments,
         protected RentScheduleService $rentSchedule,
-        protected StripeConnectService $stripeConnect,
     ) {}
 
     /**
@@ -148,11 +146,7 @@ class TenantPaymentLifecycleService
         }
 
         $status = $payment->status;
-        $payment->loadMissing('tenant.landlord');
-        $landlordReady = $this->stripeConnect->canAcceptRentPayments($payment->tenant->landlord);
-        $canPay = $status->isOutstanding()
-            && ! config('landlord.portal.pay_online_coming_soon', false)
-            && $landlordReady;
+        $canPay = $status->isOutstanding() && ! config('landlord.portal.pay_online_coming_soon', false);
 
         return new TenantPaymentStatusSummary(
             status: $status,

@@ -13,14 +13,9 @@ use Stripe\StripeClient;
 
 /**
  * Stripe Checkout for a single rent period (mode=payment).
- * Uses Connect direct charges so funds settle on the landlord's Stripe account.
  */
 class StripeRentPaymentGateway implements RentPaymentGateway
 {
-    public function __construct(
-        protected StripeConnectService $connect,
-    ) {}
-
     public function isConfigured(): bool
     {
         return config('landlord.stripe.enabled')
@@ -34,20 +29,10 @@ class StripeRentPaymentGateway implements RentPaymentGateway
             throw StripeNotConfiguredException::forFeature('rent checkout');
         }
 
-        $payment->loadMissing('tenant.landlord');
-
-        $landlord = $payment->tenant->landlord;
-        $connectAccountId = $this->connect->requireConnectAccountIdForRent($landlord);
-
         $client = new StripeClient((string) config('services.stripe.secret'));
-        $requestOptions = $this->connectRequestOptions($connectAccountId);
 
         if ($payment->stripe_checkout_session_id) {
-            $resumed = $this->resumeOpenSession(
-                $client,
-                $payment->stripe_checkout_session_id,
-                $requestOptions,
-            );
+            $resumed = $this->resumeOpenSession($client, $payment->stripe_checkout_session_id);
 
             if ($resumed !== null) {
                 return $resumed;
@@ -80,7 +65,7 @@ class StripeRentPaymentGateway implements RentPaymentGateway
             ],
             'success_url' => $this->checkoutUrl('rent_success'),
             'cancel_url' => $this->checkoutUrl('rent_cancel'),
-        ], $requestOptions);
+        ]);
 
         return new CheckoutSessionResult(
             sessionId: $session->id,
@@ -88,17 +73,11 @@ class StripeRentPaymentGateway implements RentPaymentGateway
         );
     }
 
-    /**
-     * @param  array<string, mixed>|array<string, string>  $requestOptions
-     */
-    protected function resumeOpenSession(
-        StripeClient $client,
-        string $sessionId,
-        array $requestOptions,
-    ): ?CheckoutSessionResult {
+    protected function resumeOpenSession(StripeClient $client, string $sessionId): ?CheckoutSessionResult
+    {
         try {
             /** @var Session $session */
-            $session = $client->checkout->sessions->retrieve($sessionId, [], $requestOptions);
+            $session = $client->checkout->sessions->retrieve($sessionId);
 
             if ($session->status === 'open' && filled($session->url)) {
                 return new CheckoutSessionResult(
@@ -111,18 +90,6 @@ class StripeRentPaymentGateway implements RentPaymentGateway
         }
 
         return null;
-    }
-
-    /**
-     * @return array<string, string>|array{}
-     */
-    protected function connectRequestOptions(?string $connectAccountId): array
-    {
-        if (! filled($connectAccountId)) {
-            return [];
-        }
-
-        return ['stripe_account' => $connectAccountId];
     }
 
     protected function amountInMinorUnits(PaymentHistory $payment, string $currency): int
