@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Actions\Payments\CreateRentCheckoutAction;
+use App\Exceptions\StripeLandlordNotReadyException;
 use App\Exceptions\StripeNotConfiguredException;
 use App\Http\Controllers\Controller;
 use App\Models\PaymentHistory;
@@ -31,6 +32,10 @@ class RentCheckoutController extends Controller
             $session = $this->createCheckout->execute($paymentHistory);
 
             return redirect()->away($session->url);
+        } catch (StripeLandlordNotReadyException) {
+            return redirect()
+                ->route('portal.dashboard')
+                ->with('status', 'Card payments are not set up for your landlord yet. You can still confirm payment with a receipt.');
         } catch (StripeNotConfiguredException) {
             return redirect()
                 ->route('portal.dashboard')
