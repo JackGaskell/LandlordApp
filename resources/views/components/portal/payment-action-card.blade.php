@@ -65,9 +65,12 @@
         @if ($status->portalIsActionable())
             <div class="mt-auto pt-4">
                 @if ($primaryAction === 'pay')
-                    <x-ui.button href="#" class="w-full justify-center shadow-glow">
-                        {{ $status->portalPrimaryActionLabel() }}
-                    </x-ui.button>
+                    <form method="POST" action="{{ route('portal.payments.checkout', $paymentId) }}">
+                        @csrf
+                        <x-ui.button type="submit" class="w-full justify-center shadow-glow">
+                            {{ $status->portalPrimaryActionLabel() }}
+                        </x-ui.button>
+                    </form>
                     @if ($status->canUploadProof)
                         <button
                             type="button"
