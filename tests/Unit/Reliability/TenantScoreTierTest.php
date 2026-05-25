@@ -43,8 +43,10 @@ class TenantScoreTierTest extends TestCase
     {
         $tenant = Tenant::factory()->create(['portal_enabled_at' => now()]);
 
-        $profile = app(TenantPortalDashboardService::class)->snapshot($tenant)->reliability;
+        $snapshot = app(TenantPortalDashboardService::class)->snapshot($tenant);
+        $profile = $snapshot->reliability;
 
+        $this->assertDatabaseHas('payment_histories', ['tenant_id' => $tenant->id]);
         $this->assertFalse($profile->portalScoreIsEstablished());
         $this->assertSame('New', $profile->portalScoreDisplay());
         $this->assertSame('Not started yet', $profile->portalScoreSubtitle());

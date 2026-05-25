@@ -33,6 +33,8 @@ use App\Services\Reminders\Channels\EmailReminderChannel;
 use App\Services\Reminders\ReminderChannelRegistry;
 use App\Services\Webhooks\StripeWebhookDispatcher;
 use App\Enums\ReminderChannel;
+use App\Listeners\SetupLandlordDefaults;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Event;
@@ -63,6 +65,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerAuthMailTemplates();
         $this->registerPaymentProofEvents();
         $this->registerLandlordViewComposers();
+        Event::listen(Registered::class, SetupLandlordDefaults::class);
         PaymentHistory::observe(PaymentHistoryObserver::class);
     }
 

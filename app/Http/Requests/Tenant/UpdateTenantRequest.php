@@ -20,6 +20,7 @@ class UpdateTenantRequest extends FormRequest
     {
         return [
             'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'property_label' => ['nullable', 'string', 'max:255'],
             'email' => ['sometimes', 'required', 'email', 'max:255'],
             'phone_number' => ['nullable', 'string', 'max:30'],
             'rent_amount' => ['sometimes', 'required', 'numeric', 'min:0', 'max:999999.99'],

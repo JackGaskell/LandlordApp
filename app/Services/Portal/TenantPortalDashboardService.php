@@ -9,6 +9,7 @@ use App\Models\PaymentProof;
 use App\Models\PaymentHistory;
 use App\Models\Tenant;
 use App\Services\Reliability\TenantReliabilityProfileService;
+use App\Services\Rent\RentPeriodAutomationService;
 use Illuminate\Support\Collection;
 
 class TenantPortalDashboardService
@@ -16,10 +17,12 @@ class TenantPortalDashboardService
     public function __construct(
         protected TenantPaymentLifecycleService $lifecycle,
         protected TenantReliabilityProfileService $reliability,
+        protected RentPeriodAutomationService $rentPeriods,
     ) {}
 
     public function snapshot(Tenant $tenant): TenantPortalSnapshot
     {
+        $this->rentPeriods->maintainTenantSchedule($tenant);
         $this->lifecycle->refreshOpenPaymentStatuses($tenant);
 
         $tenant->loadMissing(['paymentHistories', 'paymentProofs']);
@@ -72,9 +75,9 @@ class TenantPortalDashboardService
             ->map(fn (PaymentProof $proof) => new TenantPortalActivityItem(
                 type: 'proof',
                 title: match ($proof->status) {
-                    PaymentProofStatus::Approved => 'Payment proof approved',
-                    PaymentProofStatus::Rejected => 'Payment proof not accepted',
-                    default => 'Payment proof submitted',
+                    PaymentProofStatus::Approved => 'Confirmation approved',
+                    PaymentProofStatus::Rejected => 'Confirmation declined',
+                    default => 'Confirmation submitted',
                 },
                 description: $proof->original_filename,
                 occurredAt: $proof->created_at,

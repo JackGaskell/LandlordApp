@@ -16,6 +16,6 @@
             <x-ui.button class="w-full justify-center" href="#">Pay rent online</x-ui.button>
         </div>
     @elseif ($payOnlineComingSoon)
-        <p class="mt-6 text-xs text-slate-500">Online card payments are coming soon — you can still upload proof today.</p>
+        <p class="mt-6 text-xs text-slate-500">Online card payments are coming soon — you can still upload a receipt today.</p>
     @endif
 </div>

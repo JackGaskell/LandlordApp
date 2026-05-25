@@ -41,12 +41,8 @@ class PaymentStatusService
             return PaymentStatus::Paid;
         }
 
-        if ($dueDate->isPast()) {
+        if ($dueDate->copy()->startOfDay()->lt(now()->startOfDay())) {
             return PaymentStatus::Overdue;
-        }
-
-        if ($dueDate->lte(now()->addDays($this->dueSoonDays))) {
-            return PaymentStatus::DueSoon;
         }
 
         return PaymentStatus::DueSoon;

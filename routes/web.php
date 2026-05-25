@@ -30,17 +30,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('tenants/{tenant}/portal', [\App\Http\Controllers\TenantPortalController::class, 'store'])
         ->name('tenants.portal.store');
 
-    Route::post('tenants/{tenant}/payments', [PaymentHistoryController::class, 'store'])
-        ->name('tenants.payments.store');
-
-    Route::patch('payments/{payment}', [PaymentHistoryController::class, 'update'])
-        ->name('payments.update');
-
     Route::post('payments/{payment}/mark-paid', [PaymentHistoryController::class, 'markPaid'])
         ->name('payments.mark-paid');
-
-    Route::delete('payments/{payment}', [PaymentHistoryController::class, 'destroy'])
-        ->name('payments.destroy');
 
     Route::get('settings/reminders', [LandlordSettingController::class, 'edit'])
         ->name('settings.edit');

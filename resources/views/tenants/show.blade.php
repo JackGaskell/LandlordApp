@@ -1,11 +1,17 @@
-<x-app-layout :title="$tenant->name" description="Tenant profile and payment history">
+<x-app-layout :title="$tenant->name" description="Rent runs automatically — confirm payments when needed.">
     <x-slot name="actions">
-        <x-ui.button variant="secondary" :href="route('tenants.edit', $tenant)">Edit</x-ui.button>
+        <x-ui.button variant="secondary" :href="route('tenants.edit', $tenant)">Update details</x-ui.button>
     </x-slot>
 
     <x-ui.flash />
 
-    <x-ui.card title="Tenant rent portal" class="mb-6" description="Give your tenant secure access to their rent dashboard, streak, and payment proof uploads.">
+    @if ($tenant->property_label)
+        <p class="mb-4 text-sm text-slate-500">
+            <span class="font-medium text-slate-400">Property:</span> {{ $tenant->property_label }}
+        </p>
+    @endif
+
+    <x-ui.card title="Tenant rent portal" class="mb-6" description="Portal invite is sent when you add a tenant. They track rent, score, and can confirm payment from there.">
         @if ($tenant->hasPortalAccess())
             <p class="text-sm text-slate-400">Portal is active. The tenant can sign in at <a href="{{ route('portal.login') }}" class="font-medium text-brand-300 hover:text-white">{{ route('portal.login') }}</a> using <span class="text-white">{{ $tenant->email }}</span>.</p>
         @elseif ($tenant->hasPendingInvite())
@@ -56,7 +62,7 @@
         </div>
     </div>
 
-    <x-ui.card title="Payment history" class="mt-6" :padding="false">
+    <x-ui.card title="Payment history" class="mt-6" description="Periods open automatically each month. Confirm here only if you need to record payment outside the portal." :padding="false">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800">
                 <thead class="ui-table-head">

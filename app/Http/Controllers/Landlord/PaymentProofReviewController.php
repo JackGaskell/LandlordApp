@@ -26,7 +26,7 @@ class PaymentProofReviewController extends Controller
 
         return redirect()
             ->route('payment-proofs.show', $paymentProof)
-            ->with('status', 'Payment proof approved and rent marked as verified.');
+            ->with('status', 'Payment confirmed and rent marked as received.');
     }
 
     public function reject(ReviewPaymentProofRequest $request, PaymentProof $paymentProof): RedirectResponse
@@ -41,6 +41,6 @@ class PaymentProofReviewController extends Controller
 
         return redirect()
             ->route('payment-proofs.show', $paymentProof)
-            ->with('status', 'Payment proof rejected. The tenant has been notified to resubmit if needed.');
+            ->with('status', 'Confirmation declined. The tenant can submit again if needed.');
     }
 }

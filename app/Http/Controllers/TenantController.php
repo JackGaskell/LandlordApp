@@ -7,7 +7,6 @@ use App\Http\Requests\Tenant\StoreTenantRequest;
 use App\Http\Requests\Tenant\UpdateTenantRequest;
 use App\Models\Tenant;
 use App\Services\Rent\RentScheduleService;
-use App\Services\Reliability\TenantReliabilityProfileService;
 use App\Services\Tenants\TenantReliabilityService;
 use App\Services\Tenants\TenantService;
 use Illuminate\Http\RedirectResponse;
@@ -40,14 +39,20 @@ class TenantController extends Controller
 
     public function store(StoreTenantRequest $request): RedirectResponse
     {
-        $tenant = $this->createTenant->execute(
+        $result = $this->createTenant->execute(
             $request->user(),
             $request->validated(),
         );
 
-        return redirect()
-            ->route('tenants.show', $tenant)
-            ->with('status', 'Tenant created with their first rent period scheduled.');
+        $redirect = redirect()
+            ->route('tenants.show', $result['tenant'])
+            ->with('status', 'Tenant added. Rent reminders and payment tracking run automatically from here.');
+
+        if ($result['portal_invite_url']) {
+            $redirect->with('portal_invite_url', $result['portal_invite_url']);
+        }
+
+        return $redirect;
     }
 
     public function show(Tenant $tenant): View
@@ -59,7 +64,7 @@ class TenantController extends Controller
         return view('tenants.show', [
             'tenant' => $tenant,
             'reliability' => $this->reliability->score($tenant),
-            'reliabilityProfile' => $this->reliabilityProfiles->profile($tenant),
+            'reliabilityProfile' => $this->reliability->profile($tenant),
             'nextDueDate' => $this->rentSchedule->nextDueDate($tenant),
         ]);
     }

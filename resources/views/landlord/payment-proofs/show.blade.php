@@ -1,9 +1,9 @@
 <x-app-layout
     :title="'Review · '.$proof->tenant->name"
-    description="Approve or reject this payment proof submission."
+    description="Review the tenant's payment confirmation and confirm or decline it."
 >
     <x-slot name="actions">
-        <x-ui.button variant="secondary" :href="route('payment-proofs.index')">Back to queue</x-ui.button>
+        <x-ui.button variant="secondary" :href="route('payment-proofs.index')">Back to confirmations</x-ui.button>
         <x-ui.button variant="secondary" :href="route('payment-proofs.file', $proof)" target="_blank">View file</x-ui.button>
     </x-slot>
 
@@ -69,14 +69,14 @@
 
         <div class="space-y-6">
             @if ($proof->isPending())
-                <x-ui.card title="Review" description="Confirm only if the proof matches the rent payment.">
+                <x-ui.card title="Review" description="Confirm only if the receipt matches the rent payment.">
                     <form method="POST" action="{{ route('payment-proofs.approve', $proof) }}" class="space-y-4">
                         @csrf
                         <div>
                             <label for="approve_note" class="text-sm font-medium text-slate-300">Note (optional)</label>
                             <textarea id="approve_note" name="landlord_note" rows="2" class="ui-input mt-1.5 w-full" placeholder="e.g. Received — thank you"></textarea>
                         </div>
-                        <x-ui.button type="submit" class="w-full justify-center">Approve payment</x-ui.button>
+                        <x-ui.button type="submit" class="w-full justify-center">Confirm payment</x-ui.button>
                     </form>
 
                     <form method="POST" action="{{ route('payment-proofs.reject', $proof) }}" class="mt-6 space-y-4 border-t border-white/[0.06] pt-6">
@@ -85,7 +85,7 @@
                             <label for="reject_note" class="text-sm font-medium text-slate-300">Reason (optional)</label>
                             <textarea id="reject_note" name="landlord_note" rows="2" class="ui-input mt-1.5 w-full" placeholder="Explain what you need from the tenant"></textarea>
                         </div>
-                        <x-ui.button type="submit" variant="secondary" class="w-full justify-center">Reject submission</x-ui.button>
+                        <x-ui.button type="submit" variant="secondary" class="w-full justify-center">Decline</x-ui.button>
                     </form>
                 </x-ui.card>
             @else

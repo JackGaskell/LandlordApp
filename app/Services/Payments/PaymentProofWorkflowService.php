@@ -11,6 +11,7 @@ use App\Models\PaymentHistory;
 use App\Models\PaymentProof;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\Rent\RentPeriodAutomationService;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,7 @@ class PaymentProofWorkflowService
     public function __construct(
         protected PaymentProofStorageService $storage,
         protected PaymentTrackingService $paymentTracking,
+        protected RentPeriodAutomationService $rentPeriods,
     ) {}
 
     public function submit(
@@ -85,7 +87,8 @@ class PaymentProofWorkflowService
                     'paid_at' => $proof->claimed_paid_at ?? $payment->paid_at ?? now(),
                     'verification_status' => PaymentVerificationStatus::Verified,
                 ]);
-                $this->paymentTracking->sync($payment);
+                $payment = $this->paymentTracking->sync($payment);
+                $this->rentPeriods->advanceAfterPeriodSettled($payment);
             }
 
             $proof = $proof->fresh(['tenant', 'paymentHistory']);
@@ -163,7 +166,7 @@ class PaymentProofWorkflowService
 
         if ($exists) {
             throw ValidationException::withMessages([
-                'proof' => 'You already have a payment proof awaiting review for this rent period.',
+                'proof' => 'You already have a payment confirmation awaiting review for this rent period.',
             ]);
         }
     }

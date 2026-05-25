@@ -78,6 +78,6 @@ readonly class TenantPaymentStatusSummary
 
     public function portalUploadToggleShow(): string
     {
-        return 'Share payment proof';
+        return 'Upload receipt';
     }
 }

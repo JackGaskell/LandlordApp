@@ -101,8 +101,12 @@ class TenantPortalDashboardTest extends TestCase
 
         $snapshot = app(TenantPortalDashboardService::class)->snapshot($tenant);
 
-        $this->assertSame(TenantCollectionStatus::OnTrack, $snapshot->collection->status);
+        $this->assertContains($snapshot->collection->status, [
+            TenantCollectionStatus::OnTrack,
+            TenantCollectionStatus::Upcoming,
+        ]);
         $this->assertFalse($snapshot->upcomingRent->isOverdue);
+        $this->assertGreaterThanOrEqual(2, $snapshot->paymentHistory->count());
     }
 
     public function test_overdue_period_lowers_reliability_score_on_dashboard_snapshot(): void

@@ -76,6 +76,6 @@
     @endunless
 
     <x-ui.button type="submit" class="w-full justify-center">
-        Send for review
+        Submit confirmation
     </x-ui.button>
 </form>

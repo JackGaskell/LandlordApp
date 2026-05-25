@@ -188,7 +188,7 @@ readonly class TenantReliabilityProfile
         return [
             'Pay on or before your due date',
             'Keep your monthly streak going',
-            'Share proof after you pay so your record stays accurate',
+            'Upload your receipt after you pay so your record stays accurate',
         ];
     }
 
