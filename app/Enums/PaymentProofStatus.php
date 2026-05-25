@@ -15,9 +15,9 @@ enum PaymentProofStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Pending => 'Pending review',
-            self::Approved => 'Approved',
-            self::Rejected => 'Rejected',
+            self::Pending => 'Awaiting confirmation',
+            self::Approved => 'Confirmed',
+            self::Rejected => 'Declined',
         };
     }
 
@@ -26,7 +26,7 @@ enum PaymentProofStatus: string
         return match ($this) {
             self::Pending => 'Awaiting confirmation',
             self::Approved => 'Confirmed',
-            self::Rejected => 'Not accepted',
+            self::Rejected => 'Declined',
         };
     }
 

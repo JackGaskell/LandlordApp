@@ -163,7 +163,7 @@ class PaymentProofWorkflowService
 
         if ($exists) {
             throw ValidationException::withMessages([
-                'proof' => 'You already have a payment proof awaiting review for this rent period.',
+                'proof' => 'You already have a payment confirmation awaiting review for this rent period.',
             ]);
         }
     }

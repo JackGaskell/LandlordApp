@@ -237,9 +237,9 @@ class TenantPaymentLifecycleService
                     ? 'Rent is due tomorrow — a good moment to get ahead of the date.'
                     : "You have {$daysUntil} days until rent is due. A little planning goes a long way."),
             TenantCollectionStatus::ActionNeeded => $daysOverdue > 0
-                ? "This payment is {$daysOverdue} ".str('day')->plural($daysOverdue).' past the due date. If you have paid, share proof so your record stays accurate.'
-                : 'This payment is past the due date. If you have paid, sharing proof helps us update your record.',
-            TenantCollectionStatus::PartialProgress => 'Part of this month is recorded. Finish the rest when you are ready, or share proof if you have paid.',
+                ? "This payment is {$daysOverdue} ".str('day')->plural($daysOverdue).' past the due date. If you have paid, upload your receipt so your record stays accurate.'
+                : 'This payment is past the due date. If you have paid, uploading your receipt helps us update your record.',
+            TenantCollectionStatus::PartialProgress => 'Part of this month is recorded. Finish the rest when you are ready, or upload your receipt if you have paid.',
             TenantCollectionStatus::Clear => 'Nothing due at the moment. Your next rent period will appear here when it is ready.',
         };
     }
@@ -295,7 +295,7 @@ class TenantPaymentLifecycleService
                 : 'This month is marked as paid.',
             PaymentStatus::DueSoon => 'Your rent is coming up. Paying on or before the due date keeps your score and streak healthy.',
             PaymentStatus::Overdue => 'If you have already paid, confirm payment below so your record can be updated.',
-            PaymentStatus::PartiallyPaid => 'Part of this month is on record. Share proof or finish the rest when you are ready.',
+            PaymentStatus::PartiallyPaid => 'Part of this month is on record. Upload your receipt or finish the rest when you are ready.',
         };
     }
 

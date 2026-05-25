@@ -57,6 +57,17 @@ return [
         'require_email_verification' => (bool) env('REQUIRE_EMAIL_VERIFICATION', false),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Payment confirmation copy (tenant receipts awaiting landlord review)
+    |--------------------------------------------------------------------------
+    */
+    'payment_confirmations' => [
+        'nav' => 'Confirmations',
+        'title' => 'Payment confirmations',
+        'title_singular' => 'Payment confirmation',
+    ],
+
     'portal' => [
         'invite_expiry_days' => (int) env('TENANT_PORTAL_INVITE_EXPIRY_DAYS', 7),
         'proof_max_kb' => (int) env('TENANT_PAYMENT_PROOF_MAX_KB', 5120),

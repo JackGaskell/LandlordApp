@@ -1,5 +1,5 @@
 <x-app-layout
-    title="Payment proofs"
+    :title="config('landlord.payment_confirmations.title')"
     description="Review tenant payment submissions and confirm rent without chasing."
 >
     <x-slot name="actions">
@@ -39,7 +39,7 @@
             @empty
                 <x-ui.empty-state
                     title="No submissions yet"
-                    description="When tenants upload payment proof from their portal, they will appear here for review."
+                    description="When tenants confirm payment from their portal, confirmations will appear here for you to review."
                 />
             @endforelse
         </div>

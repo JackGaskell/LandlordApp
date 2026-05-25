@@ -1,4 +1,4 @@
-<x-tenant-portal-layout title="Proof you've sent" description="Track what is waiting for review.">
+<x-tenant-portal-layout title="Your confirmations" description="Receipts you've sent and their review status.">
     <div class="mb-6">
         <x-ui.button variant="secondary" :href="route('portal.dashboard')">Back home</x-ui.button>
     </div>
@@ -13,7 +13,7 @@
                                 @if ($proof->paymentHistory)
                                     {{ $proof->paymentHistory->due_date->format('F Y') }}
                                 @else
-                                    Payment proof
+                                    Payment confirmation
                                 @endif
                             </p>
                             <p class="mt-0.5 text-xs text-slate-500">{{ $proof->created_at->format('j M Y') }} · {{ $proof->original_filename }}</p>
@@ -33,7 +33,7 @@
             @empty
                 <x-ui.empty-state
                     title="Nothing sent yet"
-                    description="When you share proof from your home screen, it will show up here while it is reviewed."
+                    description="When you upload a receipt from your home screen, it will show up here while it is reviewed."
                 />
             @endforelse
         </div>

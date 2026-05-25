@@ -13,7 +13,7 @@
             'icon' => 'users',
         ],
         [
-            'label' => 'Payment proofs',
+            'label' => config('landlord.payment_confirmations.nav'),
             'route' => 'payment-proofs.index',
             'active' => request()->routeIs('payment-proofs.*'),
             'icon' => 'card',

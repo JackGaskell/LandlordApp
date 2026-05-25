@@ -1,6 +1,6 @@
 @props(['items'])
 
-<x-ui.card title="Recent activity" description="Payments and proof submissions" :padding="false">
+<x-ui.card title="Recent activity" description="Payments and confirmations" :padding="false">
     <div class="divide-y divide-white/[0.06]">
         @forelse ($items as $item)
             <div class="flex gap-4 px-5 py-4">
@@ -24,7 +24,7 @@
         @empty
             <x-ui.empty-state
                 title="Nothing here yet"
-                description="Activity will show when payments are recorded or you upload proof."
+                description="Activity will show when payments are recorded or you upload a receipt."
             />
         @endforelse
     </div>

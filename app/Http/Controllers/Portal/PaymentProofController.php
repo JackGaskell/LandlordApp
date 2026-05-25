@@ -45,6 +45,6 @@ class PaymentProofController extends Controller
 
         return redirect()
             ->route('portal.dashboard')
-            ->with('status', 'Thanks — we have your proof. We will update your record once it has been reviewed.');
+            ->with('status', 'Thanks — we have your confirmation. We will update your record once it has been reviewed.');
     }
 }

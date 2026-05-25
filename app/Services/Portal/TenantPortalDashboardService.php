@@ -72,9 +72,9 @@ class TenantPortalDashboardService
             ->map(fn (PaymentProof $proof) => new TenantPortalActivityItem(
                 type: 'proof',
                 title: match ($proof->status) {
-                    PaymentProofStatus::Approved => 'Payment proof approved',
-                    PaymentProofStatus::Rejected => 'Payment proof not accepted',
-                    default => 'Payment proof submitted',
+                    PaymentProofStatus::Approved => 'Confirmation approved',
+                    PaymentProofStatus::Rejected => 'Confirmation declined',
+                    default => 'Confirmation submitted',
                 },
                 description: $proof->original_filename,
                 occurredAt: $proof->created_at,
