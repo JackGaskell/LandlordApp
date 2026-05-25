@@ -20,7 +20,7 @@ use App\Models\Tenant;
 use App\Observers\PaymentHistoryObserver;
 use App\Services\Billing\NullSubscriptionBillingGateway;
 use App\Services\Billing\StripeSubscriptionBillingGateway;
-use App\Services\Notifications\LogPaymentProofNotifier;
+use App\Services\Notifications\MailPaymentProofNotifier;
 use App\Services\Payments\NullRentPaymentGateway;
 use App\Services\Payments\PaymentProofQueryService;
 use App\Services\Payments\StripeRentPaymentGateway;
@@ -49,7 +49,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerBillingGateways();
         $this->registerStripeWebhooks();
 
-        $this->app->bind(PaymentProofNotifier::class, LogPaymentProofNotifier::class);
+        $this->app->bind(PaymentProofNotifier::class, MailPaymentProofNotifier::class);
 
         $this->app->singleton(ReminderChannelRegistry::class, function ($app) {
             $registry = new ReminderChannelRegistry($app);

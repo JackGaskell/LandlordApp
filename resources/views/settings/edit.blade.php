@@ -54,6 +54,7 @@
                         7 => '7 days',
                         3 => '3 days',
                         1 => '1 day',
+                        0 => 'Due day',
                     ]"
                     :selected="$setting->reminder_days_before"
                 />

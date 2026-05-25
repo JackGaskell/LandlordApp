@@ -5,6 +5,7 @@ namespace App\Services\Dashboard;
 use App\Enums\PaymentStatus;
 use App\Enums\TenantStatus;
 use App\Models\PaymentHistory;
+use App\Models\PaymentProof;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\Payments\PaymentStatusService;
@@ -72,7 +73,31 @@ class CollectionHealthService
             'due_soon_tenants' => $this->tenantsWithDueSoonPayments($landlordId, $dueSoonDays),
             'paid_tenants' => $this->tenantsPaidThisMonth($landlordId, $startOfMonth, $endOfMonth),
             'recent_activity' => $this->recentPaymentActivity($landlordId),
+            'pending_confirmation_count' => $this->pendingConfirmationCount($landlordId),
+            'pending_confirmations' => $this->pendingConfirmations($landlordId),
         ];
+    }
+
+    protected function pendingConfirmationCount(int $landlordId): int
+    {
+        return PaymentProof::query()
+            ->forLandlord($landlordId)
+            ->pending()
+            ->count();
+    }
+
+    /**
+     * @return Collection<int, PaymentProof>
+     */
+    protected function pendingConfirmations(int $landlordId): Collection
+    {
+        return PaymentProof::query()
+            ->forLandlord($landlordId)
+            ->pending()
+            ->with(['tenant:id,name', 'paymentHistory:id,due_date,amount'])
+            ->latest()
+            ->limit(self::TENANT_LIST_LIMIT)
+            ->get();
     }
 
     /**

@@ -34,6 +34,6 @@ class LandlordRegistrationSetupTest extends TestCase
 
         $this->assertNotNull($settings);
         $this->assertTrue($settings->email_reminders_enabled);
-        $this->assertSame([7, 3, 1], $settings->reminder_days_before);
+        $this->assertSame([3, 1, 0], $settings->reminder_days_before);
     }
 }

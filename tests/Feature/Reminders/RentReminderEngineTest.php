@@ -25,6 +25,35 @@ class RentReminderEngineTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_dispatches_due_day_reminder_when_offset_is_zero(): void
+    {
+        Queue::fake();
+
+        $landlord = User::factory()->create();
+        LandlordSetting::factory()->for($landlord)->create([
+            'reminder_days_before' => [0],
+            'overdue_reminder_days' => [1],
+            'email_reminders_enabled' => true,
+        ]);
+
+        $tenant = Tenant::factory()->for($landlord)->create();
+        $payment = PaymentHistory::factory()->for($tenant)->create([
+            'due_date' => now()->startOfDay(),
+            'status' => PaymentStatus::DueSoon,
+        ]);
+
+        $result = app(ReminderDispatchService::class)->dispatchDueReminders($landlord);
+
+        $this->assertSame(1, $result->queued);
+        $this->assertDatabaseHas('rent_reminder_deliveries', [
+            'payment_history_id' => $payment->id,
+            'reminder_type' => ReminderType::BeforeDue->value,
+            'days_offset' => 0,
+        ]);
+
+        Queue::assertPushed(SendRentReminderJob::class);
+    }
+
     public function test_dispatches_before_due_reminder_when_due_date_matches_schedule(): void
     {
         Queue::fake();

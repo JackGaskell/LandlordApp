@@ -4,7 +4,7 @@ return [
 
     'reminders' => [
         'dispatch_time' => env('REMINDER_DISPATCH_TIME', '08:00'),
-        'days_before_due' => [7, 3, 1],
+        'days_before_due' => [3, 1, 0],
         'days_after_due' => [1, 3, 7],
         /*
         | Channels the dispatcher will attempt. Email respects landlord_settings.

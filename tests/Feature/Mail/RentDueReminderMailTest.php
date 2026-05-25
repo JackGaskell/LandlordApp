@@ -42,4 +42,37 @@ class RentDueReminderMailTest extends TestCase
         $this->assertStringContainsString('1,200.00', $html);
         $this->assertStringContainsString('Rent payment reminder', $html);
     }
+
+    public function test_due_day_reminder_includes_score_and_portal_cta(): void
+    {
+        $landlord = User::factory()->create();
+        $tenant = Tenant::factory()->for($landlord)->create([
+            'name' => 'Jamie Tenant',
+            'email' => 'jamie@example.com',
+        ]);
+
+        PaymentHistory::factory()->paid()->for($tenant)->create([
+            'due_date' => now()->subMonth(),
+            'paid_at' => now()->subMonth()->addDay(),
+        ]);
+
+        $payment = PaymentHistory::factory()->for($tenant)->create([
+            'amount' => 950,
+            'due_date' => now()->startOfDay(),
+        ]);
+
+        $mailable = new RentDueReminderMail(
+            payment: $payment->load('tenant.landlord'),
+            reminderType: ReminderType::BeforeDue,
+            daysOffset: 0,
+            tenant: $tenant,
+        );
+
+        $html = $mailable->render();
+
+        $this->assertStringContainsString('Rent due today', $html);
+        $this->assertStringContainsString('Your tenant score', $html);
+        $this->assertStringContainsString('Confirm payment in your portal', $html);
+        $this->assertStringStartsWith('Rent due today', $mailable->envelope()->subject);
+    }
 }

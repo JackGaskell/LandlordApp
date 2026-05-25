@@ -4,6 +4,7 @@ namespace Tests\Feature\Dashboard;
 
 use App\Enums\PaymentStatus;
 use App\Models\PaymentHistory;
+use App\Models\PaymentProof;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\Dashboard\CollectionHealthService;
@@ -48,8 +49,25 @@ class DashboardQueryPerformanceTest extends TestCase
 
         app(CollectionHealthService::class)->snapshot($landlord);
 
-        // 3 aggregates + 1 rent sum + 3 tenant lists + 1 activity (with eager load) = 8
-        $this->assertLessThanOrEqual(10, $queries, "Expected ≤10 queries, ran {$queries}");
+        // aggregates + lists + activity + pending confirmations
+        $this->assertLessThanOrEqual(12, $queries, "Expected ≤12 queries, ran {$queries}");
+    }
+
+    public function test_dashboard_shows_needs_attention_when_confirmations_pending(): void
+    {
+        $landlord = User::factory()->create();
+        $tenant = Tenant::factory()->for($landlord)->create(['name' => 'Alex Renter']);
+        $payment = PaymentHistory::factory()->dueSoon()->for($tenant)->create();
+
+        PaymentProof::factory()->for($tenant)->for($payment)->create();
+
+        $this->actingAs($landlord)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Needs your attention', false)
+            ->assertSee('Payment confirmations', false)
+            ->assertSee('Alex Renter', false)
+            ->assertSee('Review', false);
     }
 
     public function test_dashboard_page_renders_for_authenticated_landlord(): void

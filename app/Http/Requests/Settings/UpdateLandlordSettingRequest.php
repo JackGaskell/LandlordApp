@@ -17,16 +17,16 @@ class UpdateLandlordSettingRequest extends FormRequest
 
             if (is_string($value)) {
                 $this->merge([
-                    $field => array_values(array_filter(array_map(
+                    $field => array_values(array_map(
                         'intval',
                         array_map('trim', explode(',', $value)),
-                    ))),
+                    )),
                 ]);
             }
 
             if (is_array($value)) {
                 $this->merge([
-                    $field => array_values(array_filter(array_map('intval', $value))),
+                    $field => array_values(array_map('intval', $value)),
                 ]);
             }
         }

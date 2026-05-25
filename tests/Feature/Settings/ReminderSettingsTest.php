@@ -47,6 +47,26 @@ class ReminderSettingsTest extends TestCase
             ->assertOk()
             ->assertSee('Before rent is due', false)
             ->assertSee('If rent is late', false)
-            ->assertSee('Email reminders', false);
+            ->assertSee('Email reminders', false)
+            ->assertSee('Due day', false);
+    }
+
+    public function test_landlord_can_save_due_day_in_before_due_schedule(): void
+    {
+        $user = User::factory()->create();
+        $setting = LandlordSetting::factory()->for($user)->create([
+            'reminder_days_before' => [7, 3, 1],
+            'overdue_reminder_days' => [1, 3, 7],
+        ]);
+
+        $this->actingAs($user)->put(route('settings.update', $setting), [
+            'reminder_days_before' => ['0', '3'],
+            'overdue_reminder_days' => ['1'],
+            'email_reminders_enabled' => '1',
+        ])->assertRedirect(route('settings.edit'));
+
+        $setting->refresh();
+
+        $this->assertSame([0, 3], $setting->reminder_days_before);
     }
 }

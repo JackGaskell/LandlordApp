@@ -37,6 +37,71 @@
             </div>
         </div>
 
+        @if ($health['pending_confirmation_count'] > 0 || $health['overdue_count'] > 0)
+            <x-ui.card
+                title="Needs your attention"
+                :description="($health['pending_confirmation_count'] + $health['overdue_count']).' item(s) waiting on you'"
+            >
+                <div class="space-y-6">
+                    @if ($health['pending_confirmation_count'] > 0)
+                        <div>
+                            <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                                Payment confirmations ({{ $health['pending_confirmation_count'] }})
+                            </p>
+                            <div class="space-y-1">
+                                @foreach ($health['pending_confirmations'] as $proof)
+                                    <a
+                                        href="{{ route('payment-proofs.show', $proof) }}"
+                                        class="flex items-center justify-between gap-3 rounded-xl px-2 py-2.5 transition hover:bg-white/[0.04]"
+                                    >
+                                        <div class="min-w-0">
+                                            <p class="truncate text-sm font-medium text-white">{{ $proof->tenant->name }}</p>
+                                            <p class="text-xs text-slate-500">
+                                                @if ($proof->paymentHistory)
+                                                    {{ $proof->paymentHistory->due_date->format('F Y') }}
+                                                    · £{{ number_format((float) $proof->paymentHistory->amount, 2) }}
+                                                @else
+                                                    Submitted {{ $proof->created_at->diffForHumans() }}
+                                                @endif
+                                            </p>
+                                        </div>
+                                        <x-ui.badge tone="brand">Review</x-ui.badge>
+                                    </a>
+                                @endforeach
+                            </div>
+                            @if ($health['pending_confirmation_count'] > $health['pending_confirmations']->count())
+                                <a href="{{ route('payment-proofs.index', ['status' => 'pending']) }}" class="mt-2 inline-block text-xs font-medium text-brand-300 hover:text-white">
+                                    View all confirmations →
+                                </a>
+                            @endif
+                        </div>
+                    @endif
+
+                    @if ($health['overdue_count'] > 0)
+                        <div @class(['border-t border-white/[0.06] pt-6' => $health['pending_confirmation_count'] > 0])>
+                            <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                                Overdue rent ({{ $health['overdue_count'] }})
+                            </p>
+                            <div class="space-y-1">
+                                @foreach ($health['overdue_tenants']->take(5) as $tenant)
+                                    <a
+                                        href="{{ route('tenants.show', $tenant) }}"
+                                        class="flex items-center justify-between gap-3 rounded-xl px-2 py-2.5 transition hover:bg-white/[0.04]"
+                                    >
+                                        <div class="min-w-0">
+                                            <p class="truncate text-sm font-medium text-white">{{ $tenant->name }}</p>
+                                            <p class="text-xs text-slate-500">£{{ number_format($tenant->rent_amount, 2) }} / month</p>
+                                        </div>
+                                        <x-payment-status-badge status="overdue" />
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </x-ui.card>
+        @endif
+
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <x-ui.stat-card label="Total monthly rent" :value="'£'.$health['total_monthly_rent']" hint="Active tenants" tone="brand">
                 <x-slot name="icon">
