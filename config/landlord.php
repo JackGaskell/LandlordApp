@@ -82,7 +82,7 @@ return [
         'invite_expiry_days' => (int) env('TENANT_PORTAL_INVITE_EXPIRY_DAYS', 7),
         'proof_max_kb' => (int) env('TENANT_PAYMENT_PROOF_MAX_KB', 5120),
         'proof_mimes' => ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'webp'],
-        'pay_online_coming_soon' => true,
+        'pay_online_coming_soon' => (bool) env('PORTAL_PAY_ONLINE_COMING_SOON', false),
     ],
 
     'payment_proofs' => [
@@ -135,8 +135,8 @@ return [
         'checkout_urls' => [
             'subscription_success' => env('STRIPE_SUBSCRIPTION_SUCCESS_URL', '/dashboard?billing=success'),
             'subscription_cancel' => env('STRIPE_SUBSCRIPTION_CANCEL_URL', '/dashboard?billing=cancel'),
-            'rent_success' => env('STRIPE_RENT_SUCCESS_URL', '/tenants/{tenant}?payment=success'),
-            'rent_cancel' => env('STRIPE_RENT_CANCEL_URL', '/tenants/{tenant}?payment=cancel'),
+            'rent_success' => env('STRIPE_RENT_SUCCESS_URL', '/portal?payment=success'),
+            'rent_cancel' => env('STRIPE_RENT_CANCEL_URL', '/portal?payment=cancel'),
         ],
     ],
 
