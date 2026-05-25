@@ -17,16 +17,9 @@ class DashboardController extends Controller
         $tenant = auth('tenant')->user();
         $snapshot = $this->dashboard->snapshot($tenant);
 
-        $paymentNotice = match (request()->query('payment')) {
-            'success' => 'Thank you — your card payment is processing. Your rent record will update shortly.',
-            'cancel' => 'Payment cancelled. You can pay anytime from this page.',
-            default => null,
-        };
-
         return view('portal.dashboard', [
             'snapshot' => $snapshot,
             'tenant' => $tenant,
-            'paymentNotice' => $paymentNotice,
         ]);
     }
 }

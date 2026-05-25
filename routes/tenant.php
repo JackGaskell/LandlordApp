@@ -6,7 +6,6 @@ use App\Http\Controllers\Portal\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\InviteController;
 use App\Http\Controllers\Portal\PaymentProofController;
-use App\Http\Controllers\Portal\RentCheckoutController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('portal')->name('portal.')->group(function () {
@@ -29,8 +28,6 @@ Route::prefix('portal')->name('portal.')->group(function () {
 
     Route::middleware(['auth:tenant', 'tenant.portal'])->group(function () {
         Route::get('/', DashboardController::class)->name('dashboard');
-        Route::post('payments/{paymentHistory}/checkout', [RentCheckoutController::class, 'store'])
-            ->name('payments.checkout');
         Route::get('payment-proofs', [PaymentProofController::class, 'index'])->name('payment-proofs.index');
         Route::post('payment-proofs', [PaymentProofController::class, 'store'])->name('payment-proofs.store');
         Route::get('payment-proofs/{paymentProof}/file', [\App\Http\Controllers\Portal\PaymentProofFileController::class, 'show'])

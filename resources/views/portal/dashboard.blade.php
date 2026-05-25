@@ -1,8 +1,5 @@
 <x-tenant-portal-layout :title="'Hi, '.$tenant->firstName()">
     <div class="mx-auto max-w-5xl space-y-5">
-        @if ($paymentNotice ?? false)
-            <p class="rounded-xl bg-brand-500/10 px-4 py-3 text-sm text-brand-200 ring-1 ring-brand-500/20">{{ $paymentNotice }}</p>
-        @endif
         <p class="-mt-1 text-sm text-slate-500">
             Your <span class="text-gradient font-medium">tenant score</span> reflects how consistently you pay rent.
         </p>

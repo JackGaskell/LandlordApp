@@ -146,7 +146,7 @@ class TenantPaymentLifecycleService
         }
 
         $status = $payment->status;
-        $canPay = $status->isOutstanding() && ! config('landlord.portal.pay_online_coming_soon', false);
+        $canPay = $status->isOutstanding() && ! config('landlord.portal.pay_online_coming_soon', true);
 
         return new TenantPaymentStatusSummary(
             status: $status,

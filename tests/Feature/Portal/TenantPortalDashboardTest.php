@@ -47,7 +47,7 @@ class TenantPortalDashboardTest extends TestCase
             ->assertSee('Month streak')
             ->assertSee('Consistency')
             ->assertSee('History')
-            ->assertSee('Pay now');
+            ->assertSee('Confirm payment');
     }
 
     public function test_dashboard_shows_numeric_score_after_first_scored_payment(): void

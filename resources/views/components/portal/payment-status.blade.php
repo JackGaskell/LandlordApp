@@ -11,12 +11,9 @@
         </div>
     @endif
 
-    @if ($status->canPayOnline && $paymentId)
+    @if ($status->canPayOnline)
         <div class="mt-4">
-            <form method="POST" action="{{ route('portal.payments.checkout', $paymentId) }}">
-                @csrf
-                <x-ui.button type="submit" class="w-full justify-center">Pay rent online</x-ui.button>
-            </form>
+            <x-ui.button class="w-full justify-center" href="#">Pay rent online</x-ui.button>
         </div>
     @elseif ($payOnlineComingSoon)
         <p class="mt-6 text-xs text-slate-500">Online card payments are coming soon — you can still upload a receipt today.</p>
